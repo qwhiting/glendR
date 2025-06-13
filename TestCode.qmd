@@ -1,0 +1,263 @@
+---
+title: "Model Script"
+author: "Quinn Whiting"
+format: html
+editor: visual
+---
+
+# GLENDA Formatting using 'glendR'
+
+-   this is a model r script for obtaining a GLENDA formatted PFAS dataset
+
+-   Requirements
+
+    -   glendR package (and all its requirements)
+
+    -   tidyr and dplyr (and knowledge on how to use these packages)
+
+    -   understanding of the PFAS dataset and the GLENDA flag codes
+
+    -   supplemental files
+
+        -   MDLs
+
+        -   sample names, weights, dates sampled, dates extracted, lat/lon
+
+        -   names of the samples that are duplicates and matrix spikes
+
+        -   spike levels (unknowns and QAQC samples, native and EIS/NIS)
+
+```{r}
+#import the libraries/packages 
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(glendR)
+```
+
+### Import data-set and obtain ICAL information
+
+```{r}
+#load the data from the sciex export .txt file (all row and all columns) using the path to file
+df<-loadSciex("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/240408_H012C.txt")
+#get the low and high ends of the cal curve
+cal<-detectionLimits(df)
+#plot cal curve, use ggsave() to save to a file of your choice (.png)
+p.cal<-calPlot(df, "H012:1C", "Model Script Test")
+```
+
+### Change names of any samples
+
+```{r}
+df<-df%>%filter(Sample.Name!="SSS")
+df<-df%>%filter(Sample.Name!="DB")
+df$Sample.Name<-gsub("H012_20_MS", "H012C_20_MS", df$Sample.Name)
+df$Sample.Name<-gsub("H102C_19_2", "H012C_19_2", df$Sample.Name)
+
+```
+
+### EIS/NIS %recoveries
+
+-   this will return the EIS only with the associated %recovery
+
+```{r}
+#read in an excel file that maches the EIS to the NIS
+surs<-read_excel("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/NIS for EIS.xlsx", sheet = 3)
+surs$EIS<-gsub(" ", "", surs$EIS)
+#create NIS and EIS vectors
+EIS<-unique(surs$EIS)
+NIS<-unique(surs$NIS)
+#get EIS recovery, only EIS analytes
+df.eis<-EISrec(df,EIS,NIS,surs)
+```
+
+-   this will return the NIS only with the associated %recovery
+
+```{r}
+#returns only NIS 
+df.nis<-NISrec(df,NIS = surs$NIS)
+```
+
+### Ion Ratio and Quantifier subsetting
+
+-   this calculates the ion ratios and removes the qualifiers (no longer needed)
+
+```{r}
+#ion ratio
+df.ion<-IonRatio(df)
+df.ion<-df.ion%>%filter(Component.Type=="Quantifiers")
+```
+
+### Combine and reduce dataframe
+
+-   this will combine the eis/nis/ and quantifiers for all samples
+
+-   get all the recoveries too
+
+```{r}
+df.ion<-df.ion[,c("Sample.Name", "Sample.Type", "Component.Name", "Component.Type", "Retention.Time", "Used", "Accuracy", "Acquisition.Date...Time", "Actual.Concentration", "Calculated.Concentration","Ion.Ratio.Check")]
+
+df.eis<-df.eis[,c("Sample.Name", "Sample.Type", "Component.Name", "Component.Type", "Retention.Time", "Used", "Accuracy", "Acquisition.Date...Time", "Actual.Concentration", "Calculated.Concentration", "sr")]
+
+df.nis<-df.nis[,c("Sample.Name", "Sample.Type", "Component.Name", "Component.Type", "Retention.Time", "Used", "Accuracy", "Acquisition.Date...Time", "Actual.Concentration", "Calculated.Concentration", "nisRec")]
+
+df.ion$sr<-NA
+df.ion$nisRec<-NA
+df.eis$Ion.Ratio.Check<-NA
+df.eis$nisRec<-NA
+df.nis$Ion.Ratio.Check<-NA
+df.nis$sr<-NA
+
+xx<-rbind(df.ion,df.eis, df.nis)
+```
+
+### Retention Time
+
+-   calculates the difference in RT from the calset average
+
+-   native and EIS/NIS
+
+```{r}
+df.rt<-retention(xx)
+xx<-df.rt
+```
+
+#### Remove standard cals
+
+```{r}
+xx<-xx%>%filter(Sample.Type!="Standard")
+```
+
+### Add sample types
+
+```{r}
+#remove standards prior to this
+xx<-sampleTypes(xx, MS.Samples=c("H012C_20_MS", "H012C_10_MS"), LD1.Samples=c("H012C_9", "H012C_19"),LD2.Samples = c("H012C_9_2", "H012C_19_2"), Travel.Blanks =  c("Ttravel"),Field.Blanks =  c("Filed"))
+```
+
+### Add sample info
+
+-   from an excel sheet
+
+```{r}
+#import sample data--excel with sample name, core intervals, sample date and time, prep date, weight, lat, lon, depth
+info<-read_excel("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/Reanalysis/H012_test_info.xlsx")
+xx$weightVolumneAnalyzed<-info$Weight[match(xx$Sample.Name, info$Sample)]
+xx$sampleDate<-info$Sample.Date[match(xx$Sample.Name, info$Sample)]
+xx$sampleTime<-info$Sample.Time[match(xx$Sample.Name, info$Sample)]
+xx<-xx%>%mutate(sampleTime=format(sampleTime, "%H:%M"))
+xx$topOfInterval<-info$Upper.Depth[match(xx$Sample.Name, info$Sample)]
+xx$bottomOfInterval<-info$Lower.Depth[match(xx$Sample.Name, info$Sample)]
+xx$lat<-info$Lat[match(xx$Sample.Name, info$Sample)]
+xx$long<-info$Lon[match(xx$Sample.Name, info$Sample)]
+xx$depth<-info$depth[match(xx$Sample.Name, info$Sample)]
+xx$samplePrepDate<-info$Prep.Date[match(xx$Sample.Name, info$Sample)]
+```
+
+### Add mdl
+
+```{r}
+#import mdl (ng/mL)
+mdl<-read_excel("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/MDL ngMl 240316.xlsx", sheet = 2)
+mdl$Analyte<-gsub(" ","", mdl$Analyte)
+xx$Component.Name<-gsub(" ","", xx$Component.Name)
+xx$mdl<-mdl$`MDL (ng/mL)`[match(xx$Component.Name, mdl$Analyte)]
+```
+
+### Calculate dry wt concentration
+
+-   divide by dry mass for all samples that have a mass
+
+-   others (CCVs, ISCs, cals) are just ng/mL as reported by SCIEX
+
+-   EIS Calculated.Conc can be used to %rec (already done)
+
+```{r}
+xxx<-xx
+xxx$conc<-if_else(xxx$Sample.Type %in% c("RFS", "LMS", "LMB", "OPR", "LD1", "LD2", "FTB","FRB"), (xxx$Calculated.Concentration/xxx$weightVolumneAnalyzed), xxx$Calculated.Concentration)
+xxx$resultUnits<-if_else(xxx$Sample.Type %in% c("RFS", "LMS", "LMB", "OPR", "LD1", "LD2", "FTB","FRB"), "ng/g", "ng/mL")
+#get volumne of instrumental sampels (1mL)
+xxx$weightVolumneAnalyzed<-if_else(xxx$Sample.Type %in% c("CLC", "LVM","CLB","CAL"), 1.0, xxx$weightVolumneAnalyzed)
+xxx$weightVolumneUnits<-if_else(xxx$Sample.Type %in% c("CLC", "LVM","CLB","CAL"), "mL", "g")
+```
+
+```{r}
+#get mdl into result units (ng/g) or ng/mL
+xxx$mdl2<-xxx$mdl/xxx$weightVolumneAnalyzed
+```
+
+### Spike amounts
+
+-   add in the ng weight spiked in for each sample
+
+    -   EIS and NIS
+
+    -   native (if matrix or OPR)
+
+    -   [this is already done with the 'Actual.Concentration' field]{.underline}
+
+-   add the associated CAS# for each native PFAS
+
+```{r}
+#excel sheet of the analytes and spike concentrations with CAS for no spike, low spike (LLOPR) and high spike (OPR and MS)
+spike<-read_excel("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/PFAS Spikes.xlsx", sheet=3)
+
+xxx$spikeLevel<-xxx$Actual.Concentration
+xxx$CAS<-spike$CAS[match(xxx$Component.Name, spike$Component)]
+xxx$spikeUnits<-if_else(is.na(xxx$spikeLevel), NA, 'ng')
+```
+
+### Analyte Type
+
+```{r}
+xxx<-analyteType(xxx, NIS = NIS)
+```
+
+### Duplicate analysis
+
+-   columns names must be "result", "mdl", "Sample.Type", "analyteType", "Sample.Name", "Component.Name"
+
+-   RPD calculations
+
+-   use 0.5\*MDL if result\<MDL
+
+    -   this may cause small differences if the sample weights are not the same
+
+```{r}
+#tidy dataframe to be useable with RPD function
+x4<-xxx
+x4$mdl<-x4$mdl2
+names(x4)[names(x4) == "conc"] <- "result"
+
+x5<-rpd(x4)
+```
+
+### Matrix Spike Recoveries
+
+Only run this once at it truncates the Sample.Name by 3 each time
+
+```{r}
+x5<-msRecovery(x5)
+```
+
+## LOQ and rounding
+
+-   get the LOQ from MDL
+
+-   round results to correct sigfig
+
+    -   3 if \>MDL
+
+    -   2 in \<MDL
+
+```{r}
+x5$mdl<-round(x5$mdl, 3) #round to 1000ths
+
+QLround<-function(QL){
+  Rounded <-if_else(QL>7.5, 10, if_else(QL>3.5, 5, if_else(QL>1.5, 2, if_else(QL>0.75, 1, if_else(QL>0.35,0.5,if_else(QL>0.15, 0.2, if_else(QL>.075,0.1, if_else(QL>0.035,0.05, if_else(QL>0.015, 0.02, if_else(QL>0.0075, 0.01, if_else(QL>0.0035, 0.005, if_else(QL>0.0015, 0.002,0))))))))))))
+  return(Rounded)
+}
+
+x5$`quantificationLimit`<-signif(x5$mdl*3.18, 4)
+x5$`quantificationLimit`<-QLround(x5$`quantificationLimit`)
+```
