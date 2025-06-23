@@ -10,3 +10,5 @@ Encoding: UTF-8
 LazyData: true
 Imports: dplyr, tidyr, readr, stringr, tibble, utils, ggplot2, ggpmisc
 RoxygenNote: 7.3.1
+URL: https://github.com/qwhiting/glendR
+BugReports: https://github.com/qwhiting/glendR/issues
