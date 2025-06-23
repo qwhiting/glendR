@@ -1,0 +1,212 @@
+---
+title: "GLENDR HOW-TO"
+author: "Quinn Whiting"
+format: pdf
+editor: visual
+---
+
+# Usage of the glendR R package for GLENDA formatting of PFAS data
+
+## Introduction:
+
+This walk-thru will explain the rationale for the glendR package and how to deal with analyzing the exported SCIEX data in a step-by-step way to create a fully organized dataset for submission to the Great Lakes Environmental Database (GLENDA). A few things to note before we start:
+
+1.  This walk-thru assumes that the user is familiar with R, Rstudio, and the tidyverse packages. If you are not familiar, the R 4 Data Science textbook is a great starting point (<https://r4ds.hadley.nz/>).
+
+2.  This package has dependencies, most of which are within the tidyverse, however few packages should be installed before using glendR
+
+    -   lubridate
+
+    -   ggpmisc
+
+    -   readxl
+
+3.  The order of operations is very important– some functions rely on the output of others and changing the order may affect the results or create errors.
+
+### Setting up Rstudio
+
+Using Quarto is advantageous as the R codes are in individual chunks that can be run individually, expensive note taking can be done in the text outside the chunks and allows for others to follow the code easier than commented out lines in RScripts.
+
+1.  Open a new Quart document and name it something appropriate.
+
+2.  Start a new R chunk and load the required packages
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(ggpmisc)
+library(readxl)
+library(glendR)
+```
+
+The R environment is now set up.
+
+### Importing required datasets
+
+IMPORTANT: after processing the data on SCIEX OS, export the entire results table as a .txt file. Export all rows and all columns. Do not export as a .csv or convert the table to excel, this will change how the data is formatted and the functions associated with glendR will not work.
+
+1.  Import SCIEX data
+
+    -   use the 'loadSciex' function
+
+    -   this creates a large dataframe with all the columns that the processing method from the SCIEX OS has
+
+```{r}
+sciex<-loadSciex(file.path = "/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/240408_H012C.txt")
+```
+
+2.  Load excel files of the sample information (example of how the excel file should be formatted)
+
+    -   topOfInterval and bottomOfInterval are the core depths (cm)
+
+    -   remane is used to rename any samples that may have had typos in the SCIEX processing
+
+    -   [there is no function for this in glendR as it is simply loading an excel spreadsheet]{.underline}
+
+| Sample | Weight | topOfInterval | bottomOfInterval | SampleDate | SampleTime | PrepDate | lat | long | depth | rename | batchId |
+|--------|-------|------|------|------|------|------|------|------|------|------|------|
+| N001 | 5.07 | NA | NA | 6/28/2023 | 14:27 | 5/13/24 | 43.65436 | -79.65432 | 56.7 | 2023-N001:SS |  |
+| N017 | 4.96 | NA | NA | 6/28/2023 | 18:55 | 5/13/24 | 43.876 | -79.2345 | 33.5 | 2023-N017:SS |  |
+| OPR1 | 5.01 | NA | NA | NA | NA | 5/13/24 | NA | NA | NA | OPR1 |  |
+
+```{r}
+info<-read_excel(path = "/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/Reanalysis/H012_test_info.xlsx")
+```
+
+3.  Load an excel sheet that links which EIS and NIS analytes are associated with eachother
+
+    -   again, this is just loading an excel file so there is no function in the glendR package for this
+
+    -   concentration columns are used only if they were not applied in the processing method
+
+        | EIS        | NIS     | NIS.Conc | EIS.Conc |
+        |------------|---------|----------|----------|
+        | PFBA_M3    | PFBA_M4 | 2.5      | 1        |
+        | HFPO-DA_M3 | PFOA_M8 | 2.5      | 1        |
+        | PFBS_M2    | PFOS_M8 | 1        | 1        |
+
+```{r}
+eis.nis<-read_excel(path = "/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/NIS for EIS.xlsx",sheet=3)
+#remove any spaces in the names
+eis.nis$EIS<-gsub(" ", "", eis.nis$EIS)
+eis.nis$NIS<-gsub(" ", "", eis.nis$NIS)
+```
+
+4.  Import the method detection limits (MDLs) for each analyte
+
+    -   similar to the previous imports, this is just an excel file
+
+    -   MDLs are in ng/mL, conversion to ng/g can be done with sample weights
+
+```{r}
+mdl<-mdl<-read_excel("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/MDL ngMl 240316.xlsx", sheet = 2)
+```
+
+5.  Import the spike amounts for each EIS/NIS/Native PFAS
+
+    -   EIS and NIS are spiked into every sample and the total mass (ng) needs to be recorded
+
+    -   Target PFAS are also spiked into some QAQC samples and the total mass (ng) needs to be recorded
+
+    -   This file also contains all the CAS# for each PFAS which have to be recorded in the final data file
+
+```{r}
+spike<-read_excel("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/PFAS Spikes.xlsx", sheet=3)
+```
+
+Now, everything should be uploaded to the R Global Environment and it is just a matter of tidying the data and applying flags. How glendR works is to separate the one large dataframe into smaller dataframes by sample type, then performing data manipulations and binding the smaller dataframes back into one large final dataset.
+
+![](images/Slide1.png){fig-align="center"}
+
+## Data Analysis and Initial Formatting:
+
+This section will start the data analysis process (% recoveries, duplicate analyses, QAQC checks, etc) and add the associated flags. These are the small steps that glendR does such that binding back together to the main dataframe will be straight forward and have the correct data.
+
+#### Calibration Curve:
+
+The calibration curve should be checked such that the R2 is \>0.99 and everything looks linear and has enough points. Note: this should have been done on the SCIEX OS, this is just a formality to print off the calibration curve to show that it passed the initial QAQC checks.
+
+IMPORTANT: use 'ggsave' to save the plot to a file location.
+
+```{r}
+p1<-calPlot(df=sciex, Title = "##TEXT##", Subtitle = "###text###")
+```
+
+#### Detection Limits:
+
+Similar to the calibration curve, the upper and lower detection limits will be found by what is the lowest calibration point for each analyte. Alternatively, the upper limit is found by the highest calibration point used.
+
+LLOD-lower limit (ng/mL)
+
+ULOD- upper limit (ng/mL)
+
+[**Associated flags:**]{.underline} LTL (below lower limit), GTL (greater than upper limit)
+
+```{r}
+dl<-detectionLimits(sciex)
+```
+
+### Surrogate Recovery:
+
+To calculate the surrogate (EIS) recovery first a response factor (RF) needs to be calculated between the EIS and NIS, below shows the RF equation from EPA Method 1633:
+
+![](images/RFs 1633 screenshot.png)
+
+And then to calculate the concentration of the EIS, EPA Method 1633 does:
+
+![](images/EIS conc 1633.png)
+
+And then a simple %recovery can be calculated with the known amount spiked into each sample.
+
+This is all done with the 'EISrec' function:
+
+-   the function needs the original dataframe, names of the EIS and NIS, and the eis.nis matching excel file that was imported.
+
+-   it will return a smaller dataframe with the sample name, EIS name, calculated concentration, %recovery, and a matching id used to bind back together later on
+
+```{r}
+#get vectors of EIS and NIS
+EIS<-unique(eis.nis$EIS)
+NIS<-unique(eis.nis$NIS)
+#create df of EIS recovery 
+df.eis<-EISrec(sciex,EIS,NIS,eis.nis)
+```
+
+### NIS Recovery:
+
+Non-extracted Internal Standards (NIS) are spiked in after extraction. For recoveries of NIS, comparison of peak area to the peak area in the calibration curve standards is done. The recovery (peak area) should be \>30% than what is in the standards.
+
+This is all done with the 'NISrec' function:
+
+-   This function only need the original dataframe and the names of the NIS
+
+-   it will return a smaller dataframe with the sample name, NIS name, recovery, and matching id to use to bind back together to the main ddataframe at a later time
+
+```{r}
+df.nis<-NISrec(sciex, NIS=NIS)
+```
+
+### Ion Ratio:
+
+The ion ratio is the peak area ratio between the qualifier ion and the quantifier ion. Not all PFAS have the quantifier and qualifier ions, and the ratio is only applied when the PFAS is \>2x the LOQ. The ion ratio must be +/- 50% of what the ion ratio is in the standard calibration curve samples.
+
+Note: this is the last that we need of the calibration curve standards and so after this, creating a new dataframe without them is useful.
+
+This is all done in the 'IonRatio' function:
+
+-   only the original dataframe is needed for this function
+
+-   this returns a smaller dataframe with the sample name, component names, the ion ratio, the % difference, and a matching id used later on
+
+```{r}
+df.ir<-IonRatio(sciex)
+```
+
+## Create a intermediate DF:
+
+Now that the calibration standards and qualifier ions will no longer be used in any calculations, remove them and clean up the original dataframe to an *intermediate* dataframe.
+
+```{r}
+#remove unnecessary sample types
+df1<-sciex%>%filter(Sample.Type %in% c("Unknown","Quality Control","Blank"))%>%filter(Component.Type !="Qualifiers")
+```

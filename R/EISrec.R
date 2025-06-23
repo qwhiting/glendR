@@ -27,7 +27,7 @@ EISrec<-function(df, EIS, NIS, matchDF){
   #calculate RF for each sample and EIS/NIS combo
   c.rf<-rf%>%filter(Sample.Type=="Standard")%>%filter(Used=="True")
   c.rf$rf<- (c.rf$Area * c.rf$IS.Actual.Concentration)/(c.rf$IS.Area * c.rf$Actual.Concentration)
-  #average RF
+  #average RF in calset
   RF <- c.rf%>%group_by(Component.Name)%>%summarise(RF=mean(rf, na.rm=T), stdev=sd(rf, na.rm=T))
   #EIS recovery for non standards (unknown, quality control, blanks)
   EISrec<- subset(rf, Sample.Type!="Standard")
@@ -38,6 +38,10 @@ EISrec<-function(df, EIS, NIS, matchDF){
     (EISrec$IS.Area * EISrec$rf)
   #EIS recovery (%)
   EISrec$sr<- round((EISrec$Calculated.Concentration/EISrec$Actual.Concentration) *100, digits = 1)
+  #create unique temp ID to match back to main df with
+  EISrec$matchId<-paste(EISrec$Sample.Name, EISrec$Component.Name)
+  #filter to only have sample name, component name, surrogatee recovery, and matching id
+  EISrec2<-EISrec[,c("Sample.Name", "Component.Name", "Calculated.Concentration","sr","matchId")]
 
-  return(EISrec)
+  return(EISrec2)
 }

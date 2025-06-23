@@ -34,8 +34,11 @@ IonRatio<-function(df){
   ir2$Ion.Ratio<-if_else(ir2$Ion.Ratio=="NA", NA, ir2$Ion.Ratio)
   ir2$Ion.Ratio<-as.numeric(ir2$Ion.Ratio)
   ir2$Ion.Ratio.Check<-round((ir2$Ion.Ratio/ir2$Standard.Ion.Ratio)*100, digits = 1)
+  ir2$matchId<-paste(ir2$Sample.Name, ir2$Component.Name)
+  ir2<-ir2%>%filter(Sample.Type %in% c("Quality Control", "Unknown", "Blank"))
+  ir3<-ir2[,c("Sample.Name","Component.Name", "Ion.Ratio", "Ion.Ratio.Check", "matchId")]
 
-  return(ir2)
+  return(ir3)
 }
 
 
