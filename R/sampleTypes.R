@@ -24,5 +24,6 @@ sampleTypes<-function(df, MS.Samples, LD1.Samples, LD2.Samples, Travel.Blanks, F
   df$resultQcIdentifier<-if_else(df$Sample.Type=="LD1", "RFS", df$resultQcIdentifier)
   df$resultQcIdentifier<-if_else(df$Sample.Type=="LD2", "LD", df$resultQcIdentifier)
 
+
   return(df)
 }

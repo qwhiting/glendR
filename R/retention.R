@@ -18,6 +18,9 @@ retention<-function(df){
   rt<-do.call("rbind", rt.list)
 
   rt$deltaRT<-if_else(rt$Sample.Type=="Standard", NA, rt$deltaRT)
-  return(rt)
+  rt$matchId<-paste(rt$Sample.Name, rt$Component.Name)
+  rt<-rt%>%filter(Sample.Type %in% c("Unknown","Blank","Quality Control"))
+  rt2<-rt[,c("Sample.Name","Component.Name","Retention.Time","deltaRT","matchId")]
+  return(rt2)
 
 }

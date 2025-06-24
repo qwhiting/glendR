@@ -41,6 +41,20 @@ library(glendR)
 
 The R environment is now set up.
 
+#### Create paths to files:
+
+Copy and paste each file path to the corresponding variable. This allows for changes to be made here instead of throughout the code, keeping things in one place.
+
+Note: some files will still require the "sheet=#" to specify which excel sheet to import.
+
+```{r}
+sciexPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/240408_H012C.txt")
+infoPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/Reanalysis/H012_test_info.xlsx")
+eisnisPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/NIS for EIS.xlsx")
+spikePath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/PFAS Spikes.xlsx")
+mdlPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/MDL ngMl 240316.xlsx")
+```
+
 ### Importing required datasets
 
 IMPORTANT: after processing the data on SCIEX OS, export the entire results table as a .txt file. Export all rows and all columns. Do not export as a .csv or convert the table to excel, this will change how the data is formatted and the functions associated with glendR will not work.
@@ -52,7 +66,7 @@ IMPORTANT: after processing the data on SCIEX OS, export the entire results tabl
     -   this creates a large dataframe with all the columns that the processing method from the SCIEX OS has
 
 ```{r}
-sciex<-loadSciex(file.path = "/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/240408_H012C.txt")
+sciex<-loadSciex(file.path = sciexPath)
 ```
 
 2.  Load excel files of the sample information (example of how the excel file should be formatted)
@@ -70,7 +84,7 @@ sciex<-loadSciex(file.path = "/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/H
 | OPR1 | 5.01 | NA | NA | NA | NA | 5/13/24 | NA | NA | NA | OPR1 |  |
 
 ```{r}
-info<-read_excel(path = "/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/Reanalysis/H012_test_info.xlsx")
+info<-read_excel(path = infoPath)
 ```
 
 3.  Load an excel sheet that links which EIS and NIS analytes are associated with eachother
@@ -86,7 +100,7 @@ info<-read_excel(path = "/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/
         | PFBS_M2    | PFOS_M8 | 1        | 1        |
 
 ```{r}
-eis.nis<-read_excel(path = "/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/NIS for EIS.xlsx",sheet=3)
+eis.nis<-read_excel(path = eisnisPath,sheet=3)
 #remove any spaces in the names
 eis.nis$EIS<-gsub(" ", "", eis.nis$EIS)
 eis.nis$NIS<-gsub(" ", "", eis.nis$NIS)
@@ -99,7 +113,8 @@ eis.nis$NIS<-gsub(" ", "", eis.nis$NIS)
     -   MDLs are in ng/mL, conversion to ng/g can be done with sample weights
 
 ```{r}
-mdl<-mdl<-read_excel("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/MDL ngMl 240316.xlsx", sheet = 2)
+mdl<-read_excel(mdlPath, sheet = 2)
+mdl$Analyte<-gsub(" ","", mdl$Analyte)
 ```
 
 5.  Import the spike amounts for each EIS/NIS/Native PFAS
@@ -111,7 +126,8 @@ mdl<-mdl<-read_excel("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/MDL
     -   This file also contains all the CAS# for each PFAS which have to be recorded in the final data file
 
 ```{r}
-spike<-read_excel("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/PFAS Spikes.xlsx", sheet=3)
+spike<-read_excel(spikePath, sheet=3)
+spike$Component<-gsub(" ","", spike$Component)
 ```
 
 Now, everything should be uploaded to the R Global Environment and it is just a matter of tidying the data and applying flags. How glendR works is to separate the one large dataframe into smaller dataframes by sample type, then performing data manipulations and binding the smaller dataframes back into one large final dataset.
@@ -139,8 +155,6 @@ Similar to the calibration curve, the upper and lower detection limits will be f
 LLOD-lower limit (ng/mL)
 
 ULOD- upper limit (ng/mL)
-
-[**Associated flags:**]{.underline} LTL (below lower limit), GTL (greater than upper limit)
 
 ```{r}
 dl<-detectionLimits(sciex)
@@ -190,8 +204,6 @@ df.nis<-NISrec(sciex, NIS=NIS)
 
 The ion ratio is the peak area ratio between the qualifier ion and the quantifier ion. Not all PFAS have the quantifier and qualifier ions, and the ratio is only applied when the PFAS is \>2x the LOQ. The ion ratio must be +/- 50% of what the ion ratio is in the standard calibration curve samples.
 
-Note: this is the last that we need of the calibration curve standards and so after this, creating a new dataframe without them is useful.
-
 This is all done in the 'IonRatio' function:
 
 -   only the original dataframe is needed for this function
@@ -202,11 +214,142 @@ This is all done in the 'IonRatio' function:
 df.ir<-IonRatio(sciex)
 ```
 
+### Retention Time:
+
+To be confident in the analyte, the retention time should match the time in the calibration standards.
+
+NOTE: branched isomers may have different retention times and should be considered on a case-by-case basis.
+
+This is all done by the 'retention' function:
+
+-   only the original dataframe is required
+
+-   this returns a smaller dataframe with the sample name, analyte, retention time, the changes from the cal standards (deltaRT), and a matching id used later
+
+```{r}
+df.rt<-retention(sciex)
+```
+
 ## Create a intermediate DF:
 
 Now that the calibration standards and qualifier ions will no longer be used in any calculations, remove them and clean up the original dataframe to an *intermediate* dataframe.
 
+[*Some of the columns are:*]{.underline}
+
+**IS.Actual.Concentration:** the spike amount (ng) added
+
+**Actual.Concentration:** the spike amount added (ng) of the target PFAS
+
+**Calculated.Concentration:** the concentration calculated from the calibration curve (ng/mL)
+
+**Accuracy:** the accuracy (or recovery) of the calculated concentration to the actual spiked in concentation
+
+**Acquisition.Date...Time:** the time of injection
+
 ```{r}
 #remove unnecessary sample types
 df1<-sciex%>%filter(Sample.Type %in% c("Unknown","Quality Control","Blank"))%>%filter(Component.Type !="Qualifiers")
+df1<-df1[,c("Sample.Name","Sample.Type","Component.Name","Component.Type","IS.Name","IS.Actual.Concentration","Actual.Concentration","Calculated.Concentration","Acquisition.Date...Time", "Accuracy","Retention.Time")]
+df1$Component.Name<-gsub(" ","", df1$Component.Name)
 ```
+
+### Sample Types:
+
+First, creating the sample types in necessary for the functions that will follow. There are specific QCIDs for sample types. The function 'sampleTypes' in the glendR package creates these.
+
+For the sampleType function:
+
+-   the data frame must have a column named "Sample.Name"
+
+-   it overrides the "Sample.Type" column and renames it "resultQcIdentifier"
+
+-   vectors of unique sample names are required to determine [matrix spikes]{.underline}, [duplicates]{.underline}, f[ield blanks]{.underline}, and [travel blanks]{.underline}
+
+    -   if there are none of these sample types in the batch, simply type "NONE" for the sample names
+
+-   it saves the "Sample.Type" column as this will be used in the final dataset and for other functions later on
+
+```{r}
+LD1s<-c("H012C_9", "H012C_19")
+LD2s<-c("H012C_9_2", "H012C_19_2") #the "_2" naming system is used to signify the duplicate sample
+MSs<-c("H012C_20_MS", "H012C_10_MS")
+FBs<-c("NONE")
+TBs<-c("NONE")
+
+df1<-sampleTypes(df1, MS.Samples = MSs, LD1.Samples = LD1s,LD2.Samples = LD2s, Field.Blanks = FBs, Travel.Blanks = TBs)
+```
+
+### Adding sample information:
+
+Add the additional information for each sample from the info data frame. This includes sample weights, core intervals, sample date and time, preparation dates, location info, and dilutions. Additionally, detection limits (MDLs & LOQs), CAS#s, and spike amounts will be added by the mdl and spike data frames imported previously.
+
+There is no function for this in glendR as it is simple adding columns and matching sample names to each other. [The key is to have the exact sample name in the info and sciex files!]{.underline}
+
+Note: each sample must have a unique name, even the QAQC samples (CCVs, OPRs, blanks, etc.)
+
+[**Sample Weights**]{.underline}
+
+```{r}
+df1$weightVolumeAnalyzed<-info$Weight[match(df1$Sample.Name, info$Sample)]
+df1$weightVolumeAnalyzed<-if_else(df1$Sample.Type %in% c("CLB","CCV", "CLC","LVM","CAL"), 1, df1$weightVolumeAnalyzed)
+df1$weightVolumeUnits<-if_else(df1$Sample.Type %in% c("CLB","CCV", "CLC","LVM","CAL"), "mL", "g")
+df1$weightBasis<-if_else(df1$weightVolumeUnits=="g", "DRY", NA)
+```
+
+[**Core Intervals**]{.underline}
+
+```{r}
+df1$topOfInterval<-info$Upper.Depth[match(df1$Sample.Name, info$Sample)]
+df1$bottomOfInterval<-info$Lower.Depth[match(df1$Sample.Name, info$Sample)]
+df1$depthUnits<-if_else(is.na(df1$topOfInterval),NA,"cm")
+```
+
+[**Dates and Times**]{.underline}
+
+```{r}
+df1$sampleDate<-info$Sample.Date[match(df1$Sample.Name, info$Sample)]
+df1$sampleTime<-info$Sample.Time[match(df1$Sample.Name, info$Sample)] 
+#have to reformat time to remove the date
+df1$sampleTime<-as.character(substr(df1$sampleTime, 12,nchar(df1$sampleTime)))
+
+df1$samplePrepDate<-info$Prep.Date[match(df1$Sample.Name, info$Sample)] 
+```
+
+[**Location**]{.underline}
+
+```{r}
+df1$lat<-info$Lat[match(df1$Sample.Name, info$Sample)] 
+df1$long<-info$Lon[match(df1$Sample.Name, info$Sample)] 
+df1$depth_m<-info$depth[match(df1$Sample.Name, info$Sample)] 
+```
+
+[**Detection Limits**]{.underline}
+
+match the MDL with the mdl file, the LOQ is calculated by the 'loq' function in the glendR package and only requires a data frame with a mdl column labeled "mdl"
+
+```{r}
+#gets the mdl in the matching units (ng/mL or ng/g)
+df1$mdl<-round(mdl$`MDL (ng/mL)`[match(df1$Component.Name, mdl$Analyte)]/df1$weightVolumeAnalyzed, digits = 3)
+
+df1<-loq(df1)
+```
+
+[**Spike Levels and CAS#**]{.underline}
+
+Don't need to use spike levels from excel sheet if correctly processed the data on SCIEX OS, can use 'Actual.Concentration'
+
+```{r}
+df1$spikeLevel<-df1$Actual.Concentration
+df1$spikeUnits<-if_else(is.na(df1$spikeLevel), NA, "ng")
+df1$analyteCasNum<-spike$CAS[match(df1$Component.Name, spike$Component)]
+```
+
+## Results:
+
+Create a results column with the correct concentrations and units
+
+## Duplicate analysis:
+
+At least 1 of 10 samples are extracted and analyzed in duplicate. The relative percent difference (RPD) is calculated between each analyte. This uses the ng/g concentration as the sample weights may differ and cause differences in the final ng/mL concentration measured by the instrument. the RPD must be \<40% for analytes that have higher detection (\>3xMDL).
+
+The function 'rpd' in the glendR package calculates the RPD and associates them to each sample-analyte combo.
