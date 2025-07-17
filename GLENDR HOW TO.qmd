@@ -78,7 +78,7 @@ sciex<-loadSciex(file.path = sciexPath)
     -   [there is no function for this in glendR as it is simply loading an excel spreadsheet]{.underline}
 
 | Sample | Weight | topOfInterval | bottomOfInterval | SampleDate | SampleTime | PrepDate | lat | long | depth | rename | batchId |
-|--------|-------|------|------|------|------|------|------|------|------|------|------|
+|------|------|------|------|------|------|------|------|------|------|------|------|
 | N001 | 5.07 | NA | NA | 6/28/2023 | 14:27 | 5/13/24 | 43.65436 | -79.65432 | 56.7 | 2023-N001:SS |  |
 | N017 | 4.96 | NA | NA | 6/28/2023 | 18:55 | 5/13/24 | 43.876 | -79.2345 | 33.5 | 2023-N017:SS |  |
 | OPR1 | 5.01 | NA | NA | NA | NA | 5/13/24 | NA | NA | NA | OPR1 |  |
@@ -164,11 +164,11 @@ dl<-detectionLimits(sciex)
 
 To calculate the surrogate (EIS) recovery first a response factor (RF) needs to be calculated between the EIS and NIS, below shows the RF equation from EPA Method 1633:
 
-![](images/RFs 1633 screenshot.png)
+![](images/RFs%201633%20screenshot.png)
 
 And then to calculate the concentration of the EIS, EPA Method 1633 does:
 
-![](images/EIS conc 1633.png)
+![](images/EIS%20conc%201633.png)
 
 And then a simple %recovery can be calculated with the known amount spiked into each sample.
 
@@ -242,7 +242,7 @@ Now that the calibration standards and qualifier ions will no longer be used in 
 
 **Calculated.Concentration:** the concentration calculated from the calibration curve (ng/mL)
 
-**Accuracy:** the accuracy (or recovery) of the calculated concentration to the actual spiked in concentation
+**Accuracy:** the accuracy (or recovery) of the calculated concentration to the actual spiked in concentration
 
 **Acquisition.Date...Time:** the time of injection
 
@@ -255,7 +255,7 @@ df1$Component.Name<-gsub(" ","", df1$Component.Name)
 
 ### Sample Types:
 
-First, creating the sample types in necessary for the functions that will follow. There are specific QCIDs for sample types. The function 'sampleTypes' in the glendR package creates these.
+Creating the sample types is necessary for the functions that will follow, thus this function must be ran first. There are specific QCIDs for sample types. The function 'sampleTypes' in the glendR package creates these.
 
 For the sampleType function:
 
@@ -265,7 +265,23 @@ For the sampleType function:
 
 -   vectors of unique sample names are required to determine [matrix spikes]{.underline}, [duplicates]{.underline}, f[ield blanks]{.underline}, and [travel blanks]{.underline}
 
-    -   if there are none of these sample types in the batch, simply type "NONE" for the sample names
+    -   These are *manually* added
+
+    -   if there are none of these sample types in the batch, simply type "NONE" for the sample names (assuming that no actual sample is named 'NONE")
+
+-   Correct naming of samples in the SCIEX OS (during batch set-up) must be used, renaming can be done seperatly if any typos exist. The naming rules are as follows, and case is ignores (i.e., any pattern of upper or lower case will match):
+
+    -   For CLC sample types: "CCV" must be in the name (ex. "CCV1", "CCV_1", "CCV 1". "1CCV", "cCv1")
+
+    -   For LVM sample types: "ISC" must be in the sample name
+
+    -   For CAL sample types: "CAL" must be in the sample name (ex. lowcal 1, Cal_9_check)
+
+    -   For CLB sample types: "IB" must be in the sample name (ex. "IB1", "IB_2")
+
+    -   For LMB sample types: "MB" must be in the sample name
+
+    -   For OPR sample types: "OPR" must be in the sample name (ex. "OPR1", "LLOPR1")
 
 -   it saves the "Sample.Type" column as this will be used in the final dataset and for other functions later on
 
@@ -279,11 +295,19 @@ TBs<-c("NONE")
 df1<-sampleTypes(df1, MS.Samples = MSs, LD1.Samples = LD1s,LD2.Samples = LD2s, Field.Blanks = FBs, Travel.Blanks = TBs)
 ```
 
+### Analyte Type:
+
+Change the analyte types to either TRG,SUR, or IS
+
+```{r}
+df1<-analyteType(df1, NIS=NIS)
+```
+
 ### Adding sample information:
 
 Add the additional information for each sample from the info data frame. This includes sample weights, core intervals, sample date and time, preparation dates, location info, and dilutions. Additionally, detection limits (MDLs & LOQs), CAS#s, and spike amounts will be added by the mdl and spike data frames imported previously.
 
-There is no function for this in glendR as it is simple adding columns and matching sample names to each other. [The key is to have the exact sample name in the info and sciex files!]{.underline}
+**There is no function for this in glendR** as it is simply adding columns and matching sample names to each other. [The key is to have the exact sample name in the info and sciex files! (look out for pesky spaces that are invisible in excel)]{.underline}
 
 Note: each sample must have a unique name, even the QAQC samples (CCVs, OPRs, blanks, etc.)
 
@@ -311,6 +335,12 @@ df1$sampleDate<-info$Sample.Date[match(df1$Sample.Name, info$Sample)]
 df1$sampleTime<-info$Sample.Time[match(df1$Sample.Name, info$Sample)] 
 #have to reformat time to remove the date
 df1$sampleTime<-as.character(substr(df1$sampleTime, 12,nchar(df1$sampleTime)))
+df1$h<-hour(df1$sampleTime)
+df1$m<-minute(df1$sampleTime)
+df1$time<-paste(df1$h, df1$m, sep = ":")
+df1$sampleTime<-df1$time
+df1<-df1[,-which(names(df1) %in% c("h","m","time"))]
+df1$sampleTime<-gsub("NA:NA",NA, df1$sampleTime)
 
 df1$samplePrepDate<-info$Prep.Date[match(df1$Sample.Name, info$Sample)] 
 ```
@@ -346,10 +376,61 @@ df1$analyteCasNum<-spike$CAS[match(df1$Component.Name, spike$Component)]
 
 ## Results:
 
-Create a results column with the correct concentrations and units
+Create a results column with the correct concentrations and units. Results should follow this structure:
+
+| Analyte | Analyte Type | Result | Units | Recovery |
+|---------|--------------|--------|-------|----------|
+| PFBA    | TRG          | 0.32   | ng/g  | NA       |
+| PFBA_M3 | SUR          | 0.21   | ng/g  | 102      |
+| PFBA_M4 | IS           | NA     | NA    | 63       |
+
+TRG and SUR analytes have results in weight by mass (volume) units while IS analytes do not have any results. Additionally, SUR analytes have a recovery % that is associated with the result and spike amount. IS analytes also have a recovery % associated by peak area (peak areas are not reported in the EDD).
+
+Here, we get to use our previously calculated EIS and NIS recoveries.
+
+```{r}
+#create a matching ID 
+df1$matchID<-paste(df1$Sample.Name, df1$Component.Name)
+#add the EIS concentrations (ng) and %recoveries 
+df1$eisConc<-df.eis$Calculated.Concentration[match(df1$matchID, df.eis$matchId)] 
+df1$eisRec<-df.eis$sr[match(df1$matchID, df.eis$matchId)]
+#add the NIS % recoveries 
+df1$nisRec<-df.nis$nisRec[match(df1$matchID, df.nis$matchId)]
+```
+
+Now we can work with the TRG analytes
+
+```{r}
+df1$trgConc<-if_else(df1$analyteType=="TRG", df1$Calculated.Concentration, NA)
+#trg analytes for % recovery
+df1$trgLCSrec<-if_else(df1$analyteType=="TRG", if_else(df1$resultQcIdentifier %in% c("CLC","LVM","CAL","OPR"), (df1$Calculated.Concentration/df1$Actual.Concentration*100), NA),NA)
+```
+
+Finally, we can combine columns.
+
+```{r}
+#get recovery column (note still missing MS recovery, will do later on)
+df1$recovery<-paste0(df1$eisRec, df1$nisRec, df1$trgLCSrec)
+df1$recovery<-gsub("NA","",df1$recovery)
+df1$recovery<-as.numeric(df1$recovery)
+df1$recovery<-round(df1$recovery, digits = 1)
+#get result column
+df1$result<-paste0(df1$eisConc, df1$trgConc)
+df1$result<-gsub("NA","",df1$result)
+df1$result<-as.numeric(df1$result)
+df1$result<-round(df1$result, digits = 5)
+#change NA values to 0 for TRG and SUR analytes, update recovery if necessary
+df1$result<-if_else(is.na(df1$result), if_else(df1$analyteType=="IS", df1$result, 0), df1$result)
+df1$recovery<-if_else(df1$analyteType=="SUR", if_else(df1$result==0.0, 0, df1$recovery), df1$recovery)
+df1$recovery<-if_else(df1$resultQcIdentifier %in% c("CLC","LVM","CAL","OPR"), if_else(df1$analyteType=="TRG", if_else(df1$result==0.0, 0, df1$recovery), df1$recovery),df1$recovery)
+```
 
 ## Duplicate analysis:
 
 At least 1 of 10 samples are extracted and analyzed in duplicate. The relative percent difference (RPD) is calculated between each analyte. This uses the ng/g concentration as the sample weights may differ and cause differences in the final ng/mL concentration measured by the instrument. the RPD must be \<40% for analytes that have higher detection (\>3xMDL).
 
-The function 'rpd' in the glendR package calculates the RPD and associates them to each sample-analyte combo.
+**The function 'rpd' in the glendR package** calculates the RPD and associates them to each sample-analyte combo.
+
+```{r}
+
+```

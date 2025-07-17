@@ -19,7 +19,7 @@ msRecovery<-function(df){
   #get the amount recovered from spike (subtract out ng/g of unspiked)
   ms$spikeresult<-ms$result-ms$asconc
   #calculate recovery
-  ms$rec<-round(((ms$spikeresult*ms$weightVolumneAnalyzed)/ms$spikeLevel)*100, digits = 1)
+  ms$rec<-round(((ms$spikeresult*ms$weightVolumeAnalyzed)/ms$spikeLevel)*100, digits = 1)
   df$tempID<-paste(df$Sample.Name, df$Component.Name)
   #bind to original df
   df$MSrec<-ms$rec[match(df$tempID, ms$tempID)]
