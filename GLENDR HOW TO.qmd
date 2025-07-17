@@ -423,14 +423,52 @@ df1$result<-round(df1$result, digits = 5)
 df1$result<-if_else(is.na(df1$result), if_else(df1$analyteType=="IS", df1$result, 0), df1$result)
 df1$recovery<-if_else(df1$analyteType=="SUR", if_else(df1$result==0.0, 0, df1$recovery), df1$recovery)
 df1$recovery<-if_else(df1$resultQcIdentifier %in% c("CLC","LVM","CAL","OPR"), if_else(df1$analyteType=="TRG", if_else(df1$result==0.0, 0, df1$recovery), df1$recovery),df1$recovery)
+#change the results to the correct units (ng/g) for solids, (ng/mL) for QC samples
+df1$result<-df1$result/df1$weightVolumeAnalyzed
+df1$resultUnits<-if_else(df1$weightVolumeUnits=="mL", "ng/mL", if_else(df1$weightVolumeUnits=="g", "ng/g", NA))
+df1$resultUnits<-if_else(df1$analyteType=="IS", NA, df1$resultUnits)
 ```
 
 ## Duplicate analysis:
 
 At least 1 of 10 samples are extracted and analyzed in duplicate. The relative percent difference (RPD) is calculated between each analyte. This uses the ng/g concentration as the sample weights may differ and cause differences in the final ng/mL concentration measured by the instrument. the RPD must be \<40% for analytes that have higher detection (\>3xMDL).
 
-**The function 'rpd' in the glendR package** calculates the RPD and associates them to each sample-analyte combo.
+**The function 'rpd' in the glendR package** calculates the RPD and associates them to each sample-analyte combo. These things must be in the df in order for the function to work:
+
+-   'Component.Name' column: column with all the analyte names
+
+-   'Sample.Name' column: column with the sample names
+
+-   'analyteType' column: column with the analyte types (TRG/SUR/IS)
+
+-   'result' column: concentrations (ng/g)
+
+-   'mdl' column: column with the mdls in the correct units (ng/g)
 
 ```{r}
+df1<-rpd(df1)
+```
 
+## Matrix Spike analysis:
+
+At least 1 in 10 samples are spiked with native PFAS and analyzed. The % recovery is determined by first subtracting out the associated un-spiked sample concentration then calculating the recovery based on the amount spiked into the sample.
+
+The function 'msRecovery' in the glendR package does this. The following are required in the df prior to running the function:
+
+-   'Sample.Type' column: with "LMS" present
+
+-   'analyteType' column: column with TRG/SUR/IS
+
+-   'Component.Name' column: names of PFAS analytes
+
+-   'weightVolumeAnalyzed' column: sample weights (g)
+
+-   'result' column: ng/g of PFAS
+
+-   'spikeLevel' column: the amount of PFAS spiked in (ng)
+
+Note: this will also remove the "\_MS" from the Sample.Name column so be aware that differentiating LMS and RFS samples will be done with Sample.Type or resultQcIdentifier columns
+
+```{r}
+df1<-msRecovery(df1)
 ```
