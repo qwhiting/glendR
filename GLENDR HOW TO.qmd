@@ -78,7 +78,7 @@ sciex<-loadSciex(file.path = sciexPath)
     -   [there is no function for this in glendR as it is simply loading an excel spreadsheet]{.underline}
 
 | Sample | Weight | topOfInterval | bottomOfInterval | SampleDate | SampleTime | PrepDate | lat | long | depth | rename | batchId |
-|------|------|------|------|------|------|------|------|------|------|------|------|
+|----|----|----|----|----|----|----|----|----|----|----|----|
 | N001 | 5.07 | NA | NA | 6/28/2023 | 14:27 | 5/13/24 | 43.65436 | -79.65432 | 56.7 | 2023-N001:SS |  |
 | N017 | 4.96 | NA | NA | 6/28/2023 | 18:55 | 5/13/24 | 43.876 | -79.2345 | 33.5 | 2023-N017:SS |  |
 | OPR1 | 5.01 | NA | NA | NA | NA | 5/13/24 | NA | NA | NA | OPR1 |  |
