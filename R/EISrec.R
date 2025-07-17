@@ -12,20 +12,29 @@ EISrec<-function(df, EIS, NIS, matchDF){
   rf.all$Component.Name<-gsub(" ","", rf.all$Component.Name)
   rf.eis<-rf.all%>%filter(Component.Name %in% EIS)
   rf.nis<-rf.all%>%filter(Component.Name %in% NIS)
+  rf.native <- rf.all %>% filter(Component.Name %in% analytes) #need to have a list of native analytes & pass it in as an arguement? My code pulls the EIS, NIS & native analytes from the global environment so
   #match NIS to corresponding EIS
   rf.eis$IS.Name<-matchDF$NIS[match(rf.eis$Component.Name, matchDF$EIS)]
   #create list of cals to add in the NIS areas to the corresponding EIS
   nis.list<- split(rf.nis, rf.nis$Sample.Name)
   eis.list<-split(rf.eis, rf.eis$Sample.Name)
+  native.list<-split(rf.native, rf.native$Sample.Name)
   #loop to add in the areas for each sample
   for(i in 1:length(eis.list)){
     eis.list[[i]]$IS.Area <- nis.list[[i]]$Area[match(eis.list[[i]]$IS.Name, nis.list[[i]]$Component.Name)]
     eis.list[[i]]$IS.Actual.Concentration<-nis.list[[i]]$Actual.Concentration[match(eis.list[[i]]$IS.Name, nis.list[[i]]$Component.Name)]
+    eis.list[[i]]$Native.Used <- native.list[[i]]$Used[match(eis.list[[i]]$Component.Group.Name, native.list[[i]]$Component.Name)] #need for filtering the correct 'Used' column
+#Take or leave the following lines of native data, I like to review them but you don't need em
+    eis.list[[i]]$Native.Area <- native.list[[i]]$Area[match(eis.list[[i]]$Component.Group.Name, native.list[[i]]$Component.Name)]
+    eis.list[[i]]$Native.Calculated.Concentration <- native.list[[i]]$Calculated.Concentration[match(eis.list[[i]]$Component.Group.Name, native.list[[i]]$Component.Name)]
+    eis.list[[i]]$Native.Actual.Concentration <- native.list[[i]]$Actual.Concentration[match(eis.list[[i]]$Component.Group.Name, native.list[[i]]$Component.Name)]
+    eis.list[[i]]$Native.Accuracy <- native.list[[i]]$Accuracy[match(eis.list[[i]]$Component.Group.Name, native.list[[i]]$Component.Name)]
+    eis.list[[i]]$Native.Used <- native.list[[i]]$Used[match(eis.list[[i]]$Component.Group.Name, native.list[[i]]$Component.Name)]
   }
 
   rf<-do.call("rbind", eis.list)
   #calculate RF for each sample and EIS/NIS combo
-  c.rf<-rf%>%filter(Sample.Type=="Standard")%>%filter(Used=="True")
+  c.rf<-rf%>%filter(Sample.Type=="Standard")%>%filter(Native.Used=="True")
   c.rf$rf<- (c.rf$Area * c.rf$IS.Actual.Concentration)/(c.rf$IS.Area * c.rf$Actual.Concentration)
   #average RF in calset
   RF <- c.rf%>%group_by(Component.Name)%>%summarise(RF=mean(rf, na.rm=T), stdev=sd(rf, na.rm=T))
