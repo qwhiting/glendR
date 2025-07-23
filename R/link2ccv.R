@@ -458,8 +458,6 @@ link2ccv<-function(df){
 
  return(df)
 
-  #df<-if_else(numberOfCcv=="1", CCV1, if_else(numberOfCcv=="2", CCV2, if_else(numberOfCcv=="3", CCV3, if_else(numberOfCcv=="4", CCV4, if_else(numberOfCcv=="5", CCV5, if_else(numberOfCcv=="6", CCV6, if_else(numberOfCcv=="7", CCV7, CCV8)))))))
-  #return(df)
 }
 
 

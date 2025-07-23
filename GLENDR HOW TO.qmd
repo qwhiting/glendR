@@ -558,24 +558,40 @@ add a flag column for limits:
 
 -   BQL: if between the MDL and LOQ
 
-```{r}
+-   GTL: if above the highest calibration (ULOD ng/mL)
 
+```{r}
+df2<-limits(df2)
 ```
 
 ### Retention Time:
 
-add the delta RT (min) and flag (if a detect \>LTL)
+add the delta RT (min) and flag (if a detect \>LTL), this was already calculated by the retentionTime function and the df.rt df was made.
 
 ```{r}
-
+df2$rtdelta<-df.rt$deltaRT[match(df2$matchID, df.rt$matchId)]
+df2$rtFlag<-if_else(df2$rtdelta>0.25, "FDC", NA)
+df2$rtFlag<-if_else(df$limFlag=="LTL", NA, df2$rtFlag)
 ```
 
 ### Blank contamination:
 
 Flag any blanks (method blanks or instrument blanks) that have detects of PFAS \> 0.5\*MDL. Any samples that are associated with these blanks will also be flagged and a comment added.
 
-```{r}
+[**Method Blanks:**]{.underline}
 
+MBs are associated by the sample preparation date so make sure that is correct in the df.
+
+```{r}
+df2<-methodBlanks(df2)
+```
+
+[**Instrumental Blanks:**]{.underline}
+
+IBs are assocated by the injection time so make sure the analysisDateTime is correct in the df.
+
+```{r}
+df2<-instrumentBlanks(df2)
 ```
 
 ## Additional QAQCs
@@ -616,9 +632,9 @@ Key things to note before running the function:
 
 6.  maximum number of CCV samples per batch must be \<=8
 
-7.  
-
 ```{r}
 df3<-df2
 df3<-link2ccv(df3)
 ```
+
+### OPRs

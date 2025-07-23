@@ -1,24 +1,24 @@
-\name{link2ccv}
-\alias{link2ccv}
+\name{methodBlanks}
+\alias{methodBlanks}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{link2ccv: function that will associate each CCV from the batch to the correct samples.
+\title{methodBlanks: a function to flag the MBs and associated samples.
 %%  ~~function to do ... ~~
 }
-\description{this function will both flag any CCVs that did not pass the QC criteria as well as flag the associated samples that were ran in the batch and have detections >MDL.
+\description{This function flags the method blanks based off of the MDL and also flags the assocated samples based off of the sample preparation date.
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
-link2ccv(df)
+methodBlanks(df)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{df}{a dataframe contaning all samples and analytes. Recovery must be calculated and the injection time must be a column.
+  \item{df}{a dataframe with all the correct columns and column names
 %%     ~~Describe \code{x} here~~
 }
 }
-\details{this function needs to be ran after the recoveries are already calculated in the 'recovery' column. Some column names have to be in the original SCIEX format while others must be named in the GLENDA format, they include the following: Sample.Name, Component.Name, resultQcIdentifier, analyteType, recovery, analysisDateTime, and mdl. Additionally, recovery and mdl must be in a numeric format and analysisDateTime must be in a time format (POSIXct).}
+\details{
 %%  ~~ If necessary, more details than the description above ~~
-
+}
 \value{
 %%  ~Describe the value returned
 %%  If it is a LIST, use
@@ -29,7 +29,7 @@ link2ccv(df)
 \references{
 %% ~put references to the literature/web site here ~
 }
-\author{Quinn Whiting
+\author{
 %%  ~~who you are~~
 }
 \note{
@@ -42,7 +42,7 @@ link2ccv(df)
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-%fill in later
+% add in later
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):
