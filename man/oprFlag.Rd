@@ -1,24 +1,23 @@
-\name{analyteType}
-\alias{analyteType}
+\name{oprFlag}
+\alias{oprFlag}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{analyteType: cahnges 'Component.Type' to 'analyteType'
+\title{oprFlag: a unction to flag the OPR samples and the associated samples
 %%  ~~function to do ... ~~
 }
-\description{this changes the component types from Internal Standards to either IS or SUR and Quantifiers to TRG
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+\description{
+This function flags the OPR samples (FLS) and the associated samples based on the analytical batch
 }
 \usage{
-analyteType(df, NIS)
+oprFlag(df)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{df}{a dataframe with all the data present (target analytes and mass-labeled standards)}
-  \item{NIS}{a vector of NIS names in the dataframe}
-%%     ~~Describe \code{x} here~~
+  \item{df}{
+the data frame
 }
-
-\details{This also renames the column to "analyteType"
-%%  ~~ If necessary, more details than the description above ~~
+}
+\details{
+the df must have the resultQcIdentifier, analyteType, analysisDateTime, Sample.Name, and recovery columns. OPR samples must be numbered with a 1 or 2 depending on if they were part of the first or second analytical batch.
 }
 \value{
 %%  ~Describe the value returned
@@ -30,8 +29,8 @@ analyteType(df, NIS)
 \references{
 %% ~put references to the literature/web site here ~
 }
-\author{Quinn Whiting
-%%  ~~who you are~~
+\author{
+Quinn Whiting
 }
 \note{
 %%  ~~further notes~~

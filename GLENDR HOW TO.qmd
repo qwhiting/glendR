@@ -1,7 +1,15 @@
 ---
-title: "GLENDR HOW-TO"
+title: "glendR walk-thru"
 author: "Quinn Whiting"
-format: pdf
+date: "July 24,  2025"
+date-modified: last-modified
+format:
+  html: 
+    embed-resources: true
+    toc: true
+    toc-title: "Jump to..."
+execute: 
+  warning: false
 editor: visual
 ---
 
@@ -38,8 +46,6 @@ Using Quarto is advantageous as the R codes are in individual chunks that can be
 3.  Start a new R chunk and load the required packages:
 
 ```{r}
-# | warning: false
-
 library(tidyverse)
 library(lubridate)
 library(ggpmisc)
@@ -66,12 +72,30 @@ Note: some files will still require the "sheet=#" to specify which excel sheet t
 -   mdlPath- MDLs for PFAS analytes .xlsx file
 
 ```{r}
-# | warning: false
 sciexPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/240408_H012C.txt")
 infoPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/Reanalysis/H012_test_info.xlsx")
 eisnisPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/NIS for EIS.xlsx")
 spikePath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/PFAS Spikes.xlsx")
 mdlPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/MDL ngMl 240316.xlsx")
+```
+
+## Set batch information:
+
+Here we need to set the information such as:
+
+-   **sampleYr**- the year the lake was sampled
+
+-   **LkAbrr**- the lake abbreviation (Superior-S, Huron-H, Ontario-N, Erie-E, Michigan-M)
+
+-   **sop**- the SOP version in the QAPP appendix
+
+-   **sordOrder**- a unique letter for each analytical batch for each lake, used to sort based on batch when the entire lake is combined into one dataset
+
+```{r}
+sampleYr<-c("2022") 
+LkAbrr<-c("H")
+sop<-c("Appendix J Rev 5 07/14/2023") 
+sortOrder<-("A") 
 ```
 
 ### Importing required datasets
@@ -85,34 +109,48 @@ IMPORTANT: after processing the data on SCIEX OS, export the entire results tabl
     -   this creates a large dataframe with all the columns that the processing method from the SCIEX OS has
 
 ```{r}
-# | warning: false
 sciex<-loadSciex(file.path = sciexPath)
 ```
 
-2.  Load excel files of the sample information (example of how the excel file should be formatted)
+2.  Load excel files of the sample information, the following columns are required (in no particular order):
 
-    -   topOfInterval and bottomOfInterval are the core depths (cm)
+    -   **Sample**- the name of the sample that you put into the SCIEX OS
 
-    -   rename is used to rename any samples that may have had typos in the SCIEX processing
+    -   **Upper.Depth**- the upper core interval (leave blank if not applicable)
 
-    -   [there is no function for this in glendR as it is simply loading an excel spreadsheet]{.underline}
+    -   **Lower.Depth**- the lower core interval
 
-| Sample | Weight | topOfInterval | bottomOfInterval | SampleDate | SampleTime | PrepDate | lat | long | depth | rename | batchId |
-|------|------|------|------|------|------|------|------|------|------|------|------|
-| N001 | 5.07 | NA | NA | 6/28/2023 | 14:27 | 5/13/24 | 43.65436 | -79.65432 | 56.7 | 2023-N001:SS |  |
-| N017 | 4.96 | NA | NA | 6/28/2023 | 18:55 | 5/13/24 | 43.876 | -79.2345 | 33.5 | 2023-N017:SS |  |
-| OPR1 | 5.01 | NA | NA | NA | NA | 5/13/24 | NA | NA | NA | OPR1 |  |
+    -   **Sample.Date**- the date the sediment was collected (m/d/yy)
+
+    -   **Sample.Time**- the time the sample was collected (24-hr utc)
+
+    -   **Prep.Date**- the date the sample was extracted in the lab (m/d/yy)
+
+    -   **Weight**- the amount of sample extracted (g)
+
+    -   **Lat**- the latitude of the sample location
+
+    -   **Lon**- the longitude of the sample location
+
+    -   **depth**- the depth of the sample in the lake (m)
+
+    -   **sedType**- the type of sediment sample ("Core" or "Surface") leave blank if not applicable (i.e., LCS samples)
+
+    -   **fieldBlank**- the name of the associated field blank
+
+    -   **dilFactor**- the dilution factor, if not diluted put "1" leave blank for LCS samples
+
+[**IMPORTANT:**]{.underline} you must follow this [exactly]{.underline} (spaces, capitalization, etc)
+
+This info file should include ALL sediment samples, MB samples, and OPR samples, MB and OPR samples will just have the Sample, Prep.Date, and Weight columns filled in.
 
 ```{r}
-# | warning: false
 info<-read_excel(path = infoPath)
 ```
 
 3.  Load an excel sheet that links which EIS and NIS analytes are associated with eachother
 
-    -   again, this is just loading an excel file so there is no function in the glendR package for this
-
-    -   concentration columns are used only if they were not applied in the processing method
+    -   concentration columns are used only if they were not applied in the processing method (i.e., IS.Actual.Concentration)
 
         | EIS        | NIS     | NIS.Conc | EIS.Conc |
         |------------|---------|----------|----------|
@@ -121,7 +159,6 @@ info<-read_excel(path = infoPath)
         | PFBS_M2    | PFOS_M8 | 1        | 1        |
 
 ```{r}
-# | warning: false
 eis.nis<-read_excel(path = eisnisPath,sheet=3)
 #remove any spaces in the names
 eis.nis$EIS<-gsub(" ", "", eis.nis$EIS)
@@ -135,7 +172,6 @@ eis.nis$NIS<-gsub(" ", "", eis.nis$NIS)
     -   MDLs are in ng/mL, conversion to ng/g can be done with sample weights
 
 ```{r}
-# | warning: false
 mdl<-read_excel(mdlPath, sheet = 2)
 mdl$Analyte<-gsub(" ","", mdl$Analyte)
 ```
@@ -149,7 +185,6 @@ mdl$Analyte<-gsub(" ","", mdl$Analyte)
     -   This file also contains all the CAS# for each PFAS which have to be recorded in the final data file
 
 ```{r}
-# | warning: false
 spike<-read_excel(spikePath, sheet=3)
 spike$Component<-gsub(" ","", spike$Component)
 ```
@@ -169,7 +204,6 @@ The calibration curve should be checked such that the R2 is \>0.99 and everythin
 IMPORTANT: use 'ggsave' to save the plot to a file location.
 
 ```{r}
-# | warning: false
 p1<-calPlot(df=sciex, Title = "##TEXT##", Subtitle = "###text###")
 ```
 
@@ -182,7 +216,6 @@ LLOD-lower limit (ng/mL)
 ULOD- upper limit (ng/mL)
 
 ```{r}
-# | warning: false
 dl<-detectionLimits(sciex)
 ```
 
@@ -205,8 +238,6 @@ This is all done with the 'EISrec' function:
 -   it will return a smaller dataframe with the sample name, EIS name, calculated concentration, %recovery, and a matching id used to bind back together later on
 
 ```{r}
-# | warning: false
-
 #get vectors of EIS and NIS
 EIS<-unique(eis.nis$EIS)
 NIS<-unique(eis.nis$NIS)
@@ -225,7 +256,6 @@ This is all done with the 'NISrec' function:
 -   it will return a smaller dataframe with the sample name, NIS name, recovery, and matching id to use to bind back together to the main ddataframe at a later time
 
 ```{r}
-# | warning: false
 df.nis<-NISrec(sciex, NIS=NIS)
 ```
 
@@ -240,7 +270,6 @@ This is all done in the 'IonRatio' function:
 -   this returns a smaller dataframe with the sample name, component names, the ion ratio, the % difference, and a matching id used later on
 
 ```{r}
-# | warning: false
 df.ir<-IonRatio(sciex)
 ```
 
@@ -257,7 +286,6 @@ This is all done by the 'retention' function:
 -   this returns a smaller dataframe with the sample name, analyte, retention time, the changes from the cal standards (deltaRT), and a matching id used later
 
 ```{r}
-# | warning: false
 df.rt<-retention(sciex)
 ```
 
@@ -278,7 +306,6 @@ Now that the calibration standards and qualifier ions will no longer be used in 
 **Acquisition.Date...Time:** the time of injection
 
 ```{r}
-# | warning: false
 #remove unnecessary sample types
 df1<-sciex%>%filter(Sample.Type %in% c("Unknown","Quality Control","Blank"))%>%filter(Component.Type !="Qualifiers")
 df1<-df1[,c("Sample.Name","Sample.Type","Component.Name","Component.Type","IS.Name","IS.Actual.Concentration","Actual.Concentration","Calculated.Concentration","Acquisition.Date...Time", "Accuracy","Retention.Time")]
@@ -318,7 +345,6 @@ For the sampleType function:
 -   it saves the "Sample.Type" column as this will be used in the final dataset and for other functions later on
 
 ```{r}
-# | warning: false
 LD1s<-c("H012C_9", "H012C_19")
 LD2s<-c("H012C_9_2", "H012C_19_2") #the "_2" naming system is used to signify the duplicate sample
 MSs<-c("H012C_20_MS", "H012C_10_MS")
@@ -333,7 +359,6 @@ df1<-sampleTypes(df1, MS.Samples = MSs, LD1.Samples = LD1s,LD2.Samples = LD2s, F
 Change the analyte types to either TRG,SUR, or IS
 
 ```{r}
-# | warning: false
 df1<-analyteType(df1, NIS=NIS)
 ```
 
@@ -348,7 +373,6 @@ Note: each sample must have a unique name, even the QAQC samples (CCVs, OPRs, bl
 [**Sample Weights**]{.underline}
 
 ```{r}
-# | warning: false
 df1$weightVolumeAnalyzed<-info$Weight[match(df1$Sample.Name, info$Sample)]
 df1$weightVolumeAnalyzed<-if_else(df1$Sample.Type %in% c("CLB","CCV", "CLC","LVM","CAL"), 1, df1$weightVolumeAnalyzed)
 df1$weightVolumeUnits<-if_else(df1$Sample.Type %in% c("CLB","CCV", "CLC","LVM","CAL"), "mL", "g")
@@ -358,20 +382,19 @@ df1$weightBasis<-if_else(df1$weightVolumeUnits=="g", "DRY", NA)
 [**Core Intervals**]{.underline}
 
 ```{r}
-# | warning: false
 df1$topOfInterval<-info$Upper.Depth[match(df1$Sample.Name, info$Sample)]
 df1$bottomOfInterval<-info$Lower.Depth[match(df1$Sample.Name, info$Sample)]
-df1$depthUnits<-if_else(is.na(df1$topOfInterval),NA,"cm")
+df1$depthUnit<-if_else(is.na(df1$topOfInterval),NA,"cm")
+#sedtype--used in later formatting
+df1$sedType<-info$sedType[match(df1$Sample.Name, info$Sample)]
 ```
 
 [**Dates and Times**]{.underline}
 
 ```{r}
-# | warning: false
 df1$sampleDate<-info$Sample.Date[match(df1$Sample.Name, info$Sample)]
 df1$sampleTime<-info$Sample.Time[match(df1$Sample.Name, info$Sample)] 
 #have to reformat time to remove the date
-#df1$sampleTime<-as.character(substr(df1$sampleTime, 12,nchar(df1$sampleTime)))
 df1$h<-hour(df1$sampleTime)
 df1$m<-minute(df1$sampleTime)
 df1$time<-paste(df1$h, df1$m, sep = ":")
@@ -388,13 +411,20 @@ df1$samplePrepDate<-info$Prep.Date[match(df1$Sample.Name, info$Sample)]
 df1$analysisDateTime<-mdy_hms(df1$Acquisition.Date...Time)
 ```
 
-[**Location**]{.underline}
+[**Location & FBs**]{.underline}
 
 ```{r}
-# | warning: false
 df1$lat<-info$Lat[match(df1$Sample.Name, info$Sample)] 
 df1$long<-info$Lon[match(df1$Sample.Name, info$Sample)] 
 df1$depth_m<-info$depth[match(df1$Sample.Name, info$Sample)] 
+df1$fieldBlank<-info$fieldBlank[match(df1$Sample.Name, info$Sample)] 
+```
+
+[**Dilutions:**]{.underline}
+
+```{r}
+df1$dilutionFactor<-info$dilFactor[match(df1$Sample.Name, info$Sample)] 
+df1$dilutionFactor<-if_else(is.na(df1$dilutionFactor),1,df1$dilutionFactor)
 ```
 
 [**Detection Limits**]{.underline}
@@ -402,10 +432,10 @@ df1$depth_m<-info$depth[match(df1$Sample.Name, info$Sample)]
 match the MDL with the mdl file, the LOQ is calculated by the 'loq' function in the glendR package and only requires a data frame with a mdl column labeled "mdl"
 
 ```{r}
-# | warning: false
 #gets the mdl in the matching units (ng/mL or ng/g)
 df1$mdl<-round(mdl$`MDL (ng/mL)`[match(df1$Component.Name, mdl$Analyte)]/df1$weightVolumeAnalyzed, digits = 3)
-
+#account for the dilution if any
+df1$mdl<-df1$mdl*df1$dilutionFactor
 df1<-loq(df1)
 ```
 
@@ -414,7 +444,6 @@ df1<-loq(df1)
 Don't need to use spike levels from excel sheet if correctly processed the data on SCIEX OS, can use 'Actual.Concentration'
 
 ```{r}
-# | warning: false
 df1$spikeLevel<-df1$Actual.Concentration
 df1$spikeUnits<-if_else(is.na(df1$spikeLevel), NA, "ng")
 df1$analyteCasNum<-spike$CAS[match(df1$Component.Name, spike$Component)]
@@ -435,20 +464,16 @@ TRG and SUR analytes have results in weight by mass (volume) units while IS anal
 Here, we get to use our previously calculated EIS and NIS recoveries.
 
 ```{r}
-# | warning: false
-#create a matching ID 
 df1$matchID<-paste(df1$Sample.Name, df1$Component.Name)
-#add the EIS concentrations (ng) and %recoveries 
 df1$eisConc<-df.eis$Calculated.Concentration[match(df1$matchID, df.eis$matchId)] 
 df1$eisRec<-df.eis$sr[match(df1$matchID, df.eis$matchId)]
-#add the NIS % recoveries 
+
 df1$nisRec<-df.nis$nisRec[match(df1$matchID, df.nis$matchId)]
 ```
 
 Now we can work with the TRG analytes
 
 ```{r}
-# | warning: false
 df1$trgConc<-if_else(df1$analyteType=="TRG", df1$Calculated.Concentration, NA)
 #trg analytes for % recovery
 df1$trgLCSrec<-if_else(df1$analyteType=="TRG", if_else(df1$resultQcIdentifier %in% c("CLC","LVM","CAL","OPR"), (df1$Calculated.Concentration/df1$Actual.Concentration*100), NA),NA)
@@ -457,8 +482,7 @@ df1$trgLCSrec<-if_else(df1$analyteType=="TRG", if_else(df1$resultQcIdentifier %i
 Finally, we can combine columns.
 
 ```{r}
-# | warning: false
-#get recovery column (note still missing MS recovery, will do later on)
+#get recovery column
 df1$recovery<-paste0(df1$eisRec, df1$nisRec, df1$trgLCSrec)
 df1$recovery<-gsub("NA","",df1$recovery)
 df1$recovery<-as.numeric(df1$recovery)
@@ -474,8 +498,29 @@ df1$recovery<-if_else(df1$analyteType=="SUR", if_else(df1$result==0.0, 0, df1$re
 df1$recovery<-if_else(df1$resultQcIdentifier %in% c("CLC","LVM","CAL","OPR"), if_else(df1$analyteType=="TRG", if_else(df1$result==0.0, 0, df1$recovery), df1$recovery),df1$recovery)
 #change the results to the correct units (ng/g) for solids, (ng/mL) for QC samples
 df1$result<-df1$result/df1$weightVolumeAnalyzed
+#get the correct diluted adjusted concentration
+df1$result<-if_else(df1$analyteType=="TRG", df1$result*df1$dilutionFactor, df1$result)
 df1$resultUnits<-if_else(df1$weightVolumeUnits=="mL", "ng/mL", if_else(df1$weightVolumeUnits=="g", "ng/g", NA))
 df1$resultUnits<-if_else(df1$analyteType=="IS", NA, df1$resultUnits)
+```
+
+EIS Flagging
+
+```{r}
+#flagging for EIS
+df1$IS.Name<-gsub(" ","", df1$IS.Name)
+df1$matchID2<-paste(df1$Sample.Name, df1$IS.Name)
+df1$eisrec2<-df.eis$sr[match(df1$matchID2, df.eis$matchId)]
+df1$eisFlag1<-if_else(df1$eisRec<20|df1$eisRec>150, "FSF",NA)
+df1$eisFlag2<-if_else(df1$eisrec2<20|df1$eisrec2>150, "FSF", NA)
+df1$eisLo<-if_else(df1$eisrec2<20, "LOB", NA)
+df1$eisHi<-if_else(df1$eisrec2>150 & df1$result>df1$mdl, "HIB", NA)
+#flagging for NIS
+df1$nis<-eis.nis$NIS[match(df1$IS.Name, eis.nis$EIS)]
+df1$matchID3<-paste(df1$Sample.Name, df1$nis)
+df1$nisrec2<-df.nis$nisRec[match(df1$matchID3, df.nis$matchId)]
+df1$nisFlag1<-if_else(df1$nisRec<30, "FIS", NA)
+df1$nisFlag2<-if_else(df1$nisrec2<30, "FIS", NA)
 ```
 
 ### Duplicates:
@@ -495,7 +540,6 @@ At least 1 of 10 samples are extracted and analyzed in duplicate. The relative p
 -   'mdl' column: column with the mdls in the correct units (ng/g)
 
 ```{r}
-# | warning: false
 df1<-rpd(df1)
 ```
 
@@ -520,9 +564,8 @@ The function 'msRecovery' in the glendR package does this. The following are req
 Note: this will also remove the "\_MS" from the Sample.Name column so be aware that differentiating LMS and RFS samples will be done with Sample.Type or resultQcIdentifier columns
 
 ```{r}
-# | warning: false
 df1<-msRecovery(df1)
-#still need to add to the 'recovery' column
+
 df1$recovery<-paste0(df1$recovery, df1$MSrec)
 df1$recovery<-gsub("NA","",df1$recovery)
 df1$recovery<-as.numeric(df1$recovery)
@@ -538,7 +581,6 @@ Now that we have the numeric results for concentrations and recoveries for all s
 add a column that has the % difference from the ion ratios, this will be used to flag later on
 
 ```{r}
-# | warning: false
 df2<-df1
 df2$ionratio<-df.ir$Ion.Ratio.Check[match(df2$matchID, df.ir$matchId)]
 df2$IRflag<-if_else(df2$ionratio<50, "ISO", NA)
@@ -561,7 +603,7 @@ add a flag column for limits:
 -   GTL: if above the highest calibration (ULOD ng/mL)
 
 ```{r}
-df2<-limits(df2)
+df2<-limits(df2, dl)
 ```
 
 ### Retention Time:
@@ -571,7 +613,7 @@ add the delta RT (min) and flag (if a detect \>LTL), this was already calculated
 ```{r}
 df2$rtdelta<-df.rt$deltaRT[match(df2$matchID, df.rt$matchId)]
 df2$rtFlag<-if_else(df2$rtdelta>0.25, "FDC", NA)
-df2$rtFlag<-if_else(df$limFlag=="LTL", NA, df2$rtFlag)
+df2$rtFlag<-if_else(df2$limFlag=="LTL", NA, df2$rtFlag)
 ```
 
 ### Blank contamination:
@@ -591,7 +633,7 @@ df2<-methodBlanks(df2)
 IBs are assocated by the injection time so make sure the analysisDateTime is correct in the df.
 
 ```{r}
-df2<-instrumentBlanks(df2)
+df2<-IBflags(df2)
 ```
 
 ## Additional QAQCs
@@ -633,8 +675,39 @@ Key things to note before running the function:
 6.  maximum number of CCV samples per batch must be \<=8
 
 ```{r}
-df3<-df2
-df3<-link2ccv(df3)
+df2<-link2ccv(df2)
 ```
 
 ### OPRs
+
+OPRs must be ran with every analytical batch (10 samples) and be numbered as such (i.e., OPR1, LLOPR2). The 1 corresponds to the first batch and the 2 to the second. The function *oprFlag* accounts for the rest.
+
+```{r}
+df2<-oprFlag(df2)
+```
+
+### CALs
+
+The calibration checks (CAL) are associated with every sample in the run and are flagged if they fall outside the acceptable recovery. Associated samples are flagged as well. The *calFlag* function in the glendR package does this.
+
+```{r}
+df2<-calFlag(df2)
+```
+
+### ISCs
+
+ISCs (LVM) are associated with every sample in the run, similar to the CALs. The FVM and all associated samples are flagged with the *iscFlag* function in glendR
+
+```{r}
+df2<-iscFlag(df2)
+```
+
+## Clean up final DF:
+
+Finally, we can clean up the dataframe that we have been working with and get it into the GLENDA format.
+
+```{r}
+final.df<-glendaFormat(df2)
+```
+
+Save it as a csv.

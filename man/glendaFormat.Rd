@@ -1,24 +1,23 @@
-\name{analyteType}
-\alias{analyteType}
+\name{glendaFormat}
+\alias{glendaFormat}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{analyteType: cahnges 'Component.Type' to 'analyteType'
+\title{glendaFormat: get the final GLENDA formmatted PFAS dataset
 %%  ~~function to do ... ~~
 }
-\description{this changes the component types from Internal Standards to either IS or SUR and Quantifiers to TRG
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+\description{
+This function will rearrange the df into what is required for GLENDA sumbission.
 }
 \usage{
-analyteType(df, NIS)
+glendaFormat(df)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{df}{a dataframe with all the data present (target analytes and mass-labeled standards)}
-  \item{NIS}{a vector of NIS names in the dataframe}
-%%     ~~Describe \code{x} here~~
+  \item{df}{
+the df
 }
-
-\details{This also renames the column to "analyteType"
-%%  ~~ If necessary, more details than the description above ~~
+}
+\details{
+certian vectors must be created such as the sop, analyteSortOrder, sampleYear, lake abbreviation, etc.
 }
 \value{
 %%  ~Describe the value returned
@@ -30,8 +29,8 @@ analyteType(df, NIS)
 \references{
 %% ~put references to the literature/web site here ~
 }
-\author{Quinn Whiting
-%%  ~~who you are~~
+\author{
+Quinn Whiting
 }
 \note{
 %%  ~~further notes~~
@@ -43,7 +42,7 @@ analyteType(df, NIS)
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-%add later
+%later
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

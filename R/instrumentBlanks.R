@@ -7,7 +7,7 @@ IBflags<-function(df){
 
   IB2<-function(df){
     #flag the TRG compounds outside the 70-130% recovery range in the ibs in the main df
-    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$mdl, "FIB",NA),NA),NA)
+    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$quantificationLimit, "FNB",NA),NA),NA)
     #create df of only the ibs target PFAS
     df.ib<-df%>%filter(resultQcIdentifier=="CLB")
     #get the number of ibs in the batch as a character
@@ -42,17 +42,17 @@ IBflags<-function(df){
     df$ibFlag<-if_else(df$result*df$weightVolumeAnalyzed>5*df$ibResult, NA, df$ibFlag)
     #associate the non-IB samples with DIB flags
     df$dibibFlag<-df$ibFlag
-    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FIB", "DIB", df$dibibFlag))
+    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FNB", "DIB", df$dibibFlag))
     #add comment
     df$ibComment<-if_else(df$dibibFlag=='DIB', "Detected in Instrument Blank >0.5MDL. Sample result < 5x blank result; therefore result considered non-detect.", NA)
     #remove columns
-    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib7time","ib8time","ib9time","ib10time", "ibResult")
+    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib6", "ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib6time", "ib7time","ib8time","ib9time","ib10time", "ibResult")
     df<-df[,!names(df) %in% remove.cols]
     return(df)
   }
   IB3<-function(df){
     #flag the TRG compounds outside the 70-130% recovery range in the ibs in the main df
-    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$mdl, "FIB",NA),NA),NA)
+    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$quantificationLimit, "FNB",NA),NA),NA)
     #create df of only the ibs target PFAS
     df.ib<-df%>%filter(resultQcIdentifier=="CLB")
     #get the number of ibs in the batch as a character
@@ -89,18 +89,18 @@ IBflags<-function(df){
     df$ibFlag<-if_else(df$result*df$weightVolumeAnalyzed>5*df$ibResult, NA, df$ibFlag)
     #associate the non-IB samples with DIB flags
     df$dibibFlag<-df$ibFlag
-    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FIB", "DIB", df$dibibFlag))
+    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FNB", "DIB", df$dibibFlag))
     #add comment
     df$ibComment<-if_else(df$dibibFlag=='DIB', "Detected in Instrument Blank >0.5MDL. Sample result < 5x blank result; therefore result considered non-detect.", NA)
     #remove columns
-    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib7time","ib8time","ib9time","ib10time", "ibResult")
+    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib6", "ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib6time", "ib7time","ib8time","ib9time","ib10time", "ibResult")
     df<-df[,!names(df) %in% remove.cols]
     return(df)
   }
 
   IB4<-function(df){
     #flag the TRG compounds outside the 70-130% recovery range in the ibs in the main df
-    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$mdl, "FIB",NA),NA),NA)
+    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$quantificationLimit, "FNB",NA),NA),NA)
     #create df of only the ibs target PFAS
     df.ib<-df%>%filter(resultQcIdentifier=="CLB")
     #get the number of ibs in the batch as a character
@@ -140,18 +140,18 @@ IBflags<-function(df){
     df$ibFlag<-if_else(df$result*df$weightVolumeAnalyzed>5*df$ibResult, NA, df$ibFlag)
     #associate the non-IB samples with DIB flags
     df$dibibFlag<-df$ibFlag
-    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FIB", "DIB", df$dibibFlag))
+    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FNB", "DIB", df$dibibFlag))
     #add comment
     df$ibComment<-if_else(df$dibibFlag=='DIB', "Detected in Instrument Blank >0.5MDL. Sample result < 5x blank result; therefore result considered non-detect.", NA)
     #remove columns
-    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib7time","ib8time","ib9time","ib10time", "ibResult")
+    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib6", "ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib6time", "ib7time","ib8time","ib9time","ib10time", "ibResult")
     df<-df[,!names(df) %in% remove.cols]
     return(df)
   }
     IB5<-function(df){
     #flag the TRG compounds outside the 70-130% recovery range in the ibs in the main df
-    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$mdl, "FIB",NA),NA),NA)
-    #create df of only the ibs target PFAS
+      df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$quantificationLimit, "FNB",NA),NA),NA)
+      #create df of only the ibs target PFAS
     df.ib<-df%>%filter(resultQcIdentifier=="CLB")
     #get the number of ibs in the batch as a character
     ib.num<-as.character(n_distinct(df.ib$Sample.Name))
@@ -192,18 +192,18 @@ IBflags<-function(df){
     df$ibFlag<-if_else(df$result*df$weightVolumeAnalyzed>5*df$ibResult, NA, df$ibFlag)
     #associate the non-IB samples with DIB flags
     df$dibibFlag<-df$ibFlag
-    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FIB", "DIB", df$dibibFlag))
+    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FNB", "DIB", df$dibibFlag))
     #add comment
     df$ibComment<-if_else(df$dibibFlag=='DIB', "Detected in Instrument Blank >0.5MDL. Sample result < 5x blank result; therefore result considered non-detect.", NA)
     #remove columns
-    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib7time","ib8time","ib9time","ib10time", "ibResult")
+    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib6", "ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib6time", "ib7time","ib8time","ib9time","ib10time", "ibResult")
     df<-df[,!names(df) %in% remove.cols]
     return(df)
   }
 
   IB6<-function(df){
     #flag the TRG compounds outside the 70-130% recovery range in the ibs in the main df
-    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$mdl, "FIB",NA),NA),NA)
+    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$quantificationLimit, "FNB",NA),NA),NA)
     #create df of only the ibs target PFAS
     df.ib<-df%>%filter(resultQcIdentifier=="CLB")
     #get the number of ibs in the batch as a character
@@ -246,18 +246,18 @@ IBflags<-function(df){
     df$ibFlag<-if_else(df$result*df$weightVolumeAnalyzed>5*df$ibResult, NA, df$ibFlag)
     #associate the non-IB samples with DIB flags
     df$dibibFlag<-df$ibFlag
-    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FIB", "DIB", df$dibibFlag))
+    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FNB", "DIB", df$dibibFlag))
     #add comment
     df$ibComment<-if_else(df$dibibFlag=='DIB', "Detected in Instrument Blank >0.5MDL. Sample result < 5x blank result; therefore result considered non-detect.", NA)
     #remove columns
-    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib7time","ib8time","ib9time","ib10time", "ibResult")
+    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib6", "ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib6time", "ib7time","ib8time","ib9time","ib10time", "ibResult")
     df<-df[,!names(df) %in% remove.cols]
     return(df)
   }
 
   IB7<-function(df){
     #flag the TRG compounds outside the 70-130% recovery range in the ibs in the main df
-    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$mdl, "FIB",NA),NA),NA)
+    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$quantificationLimit, "FNB",NA),NA),NA)
     #create df of only the ibs target PFAS
     df.ib<-df%>%filter(resultQcIdentifier=="CLB")
     #get the number of ibs in the batch as a character
@@ -302,18 +302,18 @@ IBflags<-function(df){
     df$ibFlag<-if_else(df$result*df$weightVolumeAnalyzed>5*df$ibResult, NA, df$ibFlag)
     #associate the non-IB samples with DIB flags
     df$dibibFlag<-df$ibFlag
-    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FIB", "DIB", df$dibibFlag))
+    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FNB", "DIB", df$dibibFlag))
     #add comment
     df$ibComment<-if_else(df$dibibFlag=='DIB', "Detected in Instrument Blank >0.5MDL. Sample result < 5x blank result; therefore result considered non-detect.", NA)
     #remove columns
-    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib7time","ib8time","ib9time","ib10time", "ibResult")
+    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib6", "ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib6time", "ib7time","ib8time","ib9time","ib10time", "ibResult")
     df<-df[,!names(df) %in% remove.cols]
     return(df)
   }
 
   IB8<-function(df){
     #flag the TRG compounds outside the 70-130% recovery range in the ibs in the main df
-    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$mdl, "FIB",NA),NA),NA)
+    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$quantificationLimit, "FNB",NA),NA),NA)
     #create df of only the ibs target PFAS
     df.ib<-df%>%filter(resultQcIdentifier=="CLB")
     #get the number of ibs in the batch as a character
@@ -361,18 +361,18 @@ IBflags<-function(df){
     df$ibFlag<-if_else(df$result*df$weightVolumeAnalyzed>5*df$ibResult, NA, df$ibFlag)
     #associate the non-IB samples with DIB flags
     df$dibibFlag<-df$ibFlag
-    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FIB", "DIB", df$dibibFlag))
+    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FNB", "DIB", df$dibibFlag))
     #add comment
     df$ibComment<-if_else(df$dibibFlag=='DIB', "Detected in Instrument Blank >0.5MDL. Sample result < 5x blank result; therefore result considered non-detect.", NA)
     #remove columns
-    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib7time","ib8time","ib9time","ib10time", "ibResult")
+    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib6", "ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib6time", "ib7time","ib8time","ib9time","ib10time", "ibResult")
     df<-df[,!names(df) %in% remove.cols]
     return(df)
   }
 
   IB9<-function(df){
     #flag the TRG compounds outside the 70-130% recovery range in the ibs in the main df
-    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$mdl, "FIB",NA),NA),NA)
+    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$quantificationLimit, "FNB",NA),NA),NA)
     #create df of only the ibs target PFAS
     df.ib<-df%>%filter(resultQcIdentifier=="CLB")
     #get the number of ibs in the batch as a character
@@ -422,18 +422,18 @@ IBflags<-function(df){
     df$ibFlag<-if_else(df$result*df$weightVolumeAnalyzed>5*df$ibResult, NA, df$ibFlag)
     #associate the non-IB samples with DIB flags
     df$dibibFlag<-df$ibFlag
-    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FIB", "DIB", df$dibibFlag))
+    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FNB", "DIB", df$dibibFlag))
     #add comment
     df$ibComment<-if_else(df$dibibFlag=='DIB', "Detected in Instrument Blank >0.5MDL. Sample result < 5x blank result; therefore result considered non-detect.", NA)
     #remove columns
-    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib7time","ib8time","ib9time","ib10time", "ibResult")
+    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib6", "ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib6time", "ib7time","ib8time","ib9time","ib10time", "ibResult")
     df<-df[,!names(df) %in% remove.cols]
     return(df)
   }
 
   IB10<-function(df){
     #flag the TRG compounds outside the 70-130% recovery range in the ibs in the main df
-    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$mdl, "FIB",NA),NA),NA)
+    df$ibFlag<-if_else(df$resultQcIdentifier=="CLB", if_else(df$analyteType=="TRG", if_else(df$result>0.5*df$quantificationLimit, "FNB",NA),NA),NA)
     #create df of only the ibs target PFAS
     df.ib<-df%>%filter(resultQcIdentifier=="CLB")
     #get the number of ibs in the batch as a character
@@ -485,11 +485,11 @@ IBflags<-function(df){
     df$ibFlag<-if_else(df$result*df$weightVolumeAnalyzed>5*df$ibResult, NA, df$ibFlag)
     #associate the non-IB samples with DIB flags
     df$dibibFlag<-df$ibFlag
-    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FIB", "DIB", df$dibibFlag))
+    df$dibibFlag<-if_else(df$resultQcIdentifier=="CLB", NA, gsub("FNB", "DIB", df$dibibFlag))
     #add comment
     df$ibComment<-if_else(df$dibibFlag=='DIB', "Detected in Instrument Blank >0.5MDL. Sample result < 5x blank result; therefore result considered non-detect.", NA)
     #remove columns
-    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib7time","ib8time","ib9time","ib10time", "ibResult")
+    remove.cols<-c("ibID", "ib","ib1","ib2","ib3","ib4","ib5","ib6", "ib7","ib8","ib9","ib10","ib1time","ib2time","ib3time","ib4time","ib5time","ib6time", "ib7time","ib8time","ib9time","ib10time", "ibResult")
     df<-df[,!names(df) %in% remove.cols]
     return(df)
   }

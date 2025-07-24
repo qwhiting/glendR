@@ -23,8 +23,13 @@ msRecovery<-function(df){
   df$tempID<-paste(df$Sample.Name, df$Component.Name)
   #bind to original df
   df$MSrec<-ms$rec[match(df$tempID, ms$tempID)]
-  #only have recovery for LMS sample
+ #flag (LMS and associated sample)
+  df$msFlag<-if_else(df$MSrec<40 | df$MSrec>160, "FMS", NA)
+  df$msHi<-if_else(df$MSrec>160 & df$result>df$mdl & df$resultQcIdentifier!="LMS", "HIB", NA)
+  df$msLo<-if_else(df$MSrec<40 & df$resultQcIdentifier!="LMS", "LOB", NA)
+   #only have recovery for LMS sample
   df$MSrec<-if_else(df$Sample.Type=="LMS", df$MSrec, NA)
   df<-df[ , -which(names(df) %in% c("tempID"))]
+
   return(df)
 }

@@ -29,9 +29,12 @@ rpd<-function(df){
   df$rpd<-rpd$RPD[match(df$tempID, rpd$tempID)]
   df$rpd<-if_else(df$Sample.Type %in% c("LD1","LD2"), df$rpd, NA)
   df$rpd<-round(df$rpd, digits = 1)
+  #add flag (if >2xMDL)
+  df$dupFlag<-if_else(df$result>2*df$mdl, if_else(df$rpd>40.0, "FDL", NA),NA)
   #add comments
   df$rpdCom<-paste0("RPD= ",as.character(df$rpd)," %")
   df$rpdCom<-gsub("RPD= NA %", "", df$rpdCom)
+  df$rpdCom<-if_else(df$rpdCom=="", NA, df$rpdCom)
   #remove columns
   df<-df[ , -which(names(df) %in% c("tempID"))]
   return(df)

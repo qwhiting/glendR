@@ -1,14 +1,14 @@
-\name{instrumentBlanks}
+\name{IBflags}
 \alias{instrumentBlanks}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{instrumentBlanks: a function to flag IBs and associated samples
+\title{IBflags: a function to flag IBs and associated samples
 %%  ~~function to do ... ~~
 }
 \description{
 This function first flags the IBs if they are >0.5* MDL, it then associates each IB to the corresponding samples and flags them if they are not 5x greater than the IB. It also adds the IB comment.
 }
 \usage{
-instrumentBlanks(df)
+IBflags(df)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

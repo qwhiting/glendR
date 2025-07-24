@@ -1,24 +1,23 @@
-\name{analyteType}
-\alias{analyteType}
+\name{calFlag}
+\alias{calFlag}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{analyteType: cahnges 'Component.Type' to 'analyteType'
+\title{calFlag: function to flag teh cal checks and associated samples
 %%  ~~function to do ... ~~
 }
-\description{this changes the component types from Internal Standards to either IS or SUR and Quantifiers to TRG
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+\description{
+This function flags the CALs within the df and the associated samples (expluding LVMs and CLCs) that have detections >MDL and/or are above the LTL.
 }
 \usage{
-analyteType(df, NIS)
+calFlag(df)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{df}{a dataframe with all the data present (target analytes and mass-labeled standards)}
-  \item{NIS}{a vector of NIS names in the dataframe}
-%%     ~~Describe \code{x} here~~
+  \item{df}{
+the df
 }
-
-\details{This also renames the column to "analyteType"
-%%  ~~ If necessary, more details than the description above ~~
+}
+\details{
+Necessary column are the resultQcIdentifier, analyteType, Component.Name, limFlag, and recovery.
 }
 \value{
 %%  ~Describe the value returned
@@ -30,8 +29,8 @@ analyteType(df, NIS)
 \references{
 %% ~put references to the literature/web site here ~
 }
-\author{Quinn Whiting
-%%  ~~who you are~~
+\author{
+Quinn Whiting
 }
 \note{
 %%  ~~further notes~~
