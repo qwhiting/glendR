@@ -57,7 +57,7 @@ The R environment is now set up.
 
 #### Create paths to files:
 
-Copy and paste each file path to the corresponding variable. This allows for changes to be made here instead of throughout the code, keeping things in one place.
+Copy and paste each file path to the corresponding variable. This allows for changes to be made here instead of throughout the code, keeping things in one place. [Templates are given in the template folder on github.]{.underline}
 
 Note: some files will still require the "sheet=#" to specify which excel sheet to import, [this is something that you must identify.]{.underline}
 
@@ -161,6 +161,8 @@ sciex<-loadSciex(file.path = sciexPath)
     -   **fieldBlank**- the name of the associated field blank
 
     -   **dilFactor**- the dilution factor, if not diluted put "1" leave blank for LCS samples
+
+    -   **rename**- a column used to rename any samples from the SCIEX OS batch (useful for typos)
 
 [**IMPORTANT:**]{.underline} you must follow this [exactly]{.underline} (spaces, capitalization, etc)
 
