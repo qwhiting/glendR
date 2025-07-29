@@ -3095,7 +3095,8 @@ vertical-align: -.125em;
   <ul class="collapse">
   <li><a href="#setting-up-rstudio" id="toc-setting-up-rstudio" class="nav-link" data-scroll-target="#setting-up-rstudio">Setting up Rstudio</a></li>
   </ul></li>
-  <li><a href="#set-batch-information" id="toc-set-batch-information" class="nav-link" data-scroll-target="#set-batch-information">Set batch information:</a>
+  <li><a href="#set-batch-information" id="toc-set-batch-information" class="nav-link" data-scroll-target="#set-batch-information">Set batch information:</a></li>
+  <li><a href="#set-the-sample-types" id="toc-set-the-sample-types" class="nav-link" data-scroll-target="#set-the-sample-types">Set the sample types</a>
   <ul class="collapse">
   <li><a href="#importing-required-datasets" id="toc-importing-required-datasets" class="nav-link" data-scroll-target="#importing-required-datasets">Importing required datasets</a></li>
   </ul></li>
@@ -3162,7 +3163,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">July 24, 2025</p>
+      <p class="date-modified">July 29, 2025</p>
     </div>
   </div>
     
@@ -3212,7 +3213,7 @@ vertical-align: -.125em;
 <p>The R environment is now set up.</p>
 <section id="create-paths-to-files" class="level4">
 <h4 class="anchored" data-anchor-id="create-paths-to-files">Create paths to files:</h4>
-<p>Copy and paste each file path to the corresponding variable. This allows for changes to be made here instead of throughout the code, keeping things in one place.</p>
+<p>Copy and paste each file path to the corresponding variable. This allows for changes to be made here instead of throughout the code, keeping things in one place. <u>Templates are given in the template folder on github.</u></p>
 <p>Note: some files will still require the “sheet=#” to specify which excel sheet to import, <u>this is something that you must identify.</u></p>
 <ul>
 <li><p>sciexPath- sciex .txt file</p></li>
@@ -3246,6 +3247,24 @@ vertical-align: -.125em;
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>sop<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;Appendix J Rev 5 07/14/2023&quot;</span>) </span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>sortOrder<span class="ot">&lt;-</span>(<span class="st">&quot;A&quot;</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="set-the-sample-types" class="level2">
+<h2 class="anchored" data-anchor-id="set-the-sample-types">Set the sample types</h2>
+<p>Here, we want to set the names of the duplicate and matrix spike samples in a vector so that the functions later on will recognize the correct samples. Make sure that the names are exactly as they are in the SCIEX OS.</p>
+<ul>
+<li><p>if there are none of the sample type in the batch, type “NONE” in the vector, assuming no samples were named “NONE”</p></li>
+<li><p>LD1s/LD2s: duplicate samples (must have the “_2” behind the LD2s samples)</p></li>
+<li><p>MSs: matrix spiked samples (must have “_MS” behind the spiked samples</p></li>
+<li><p>FBs: field blank samples</p></li>
+<li><p>TBs: travel blank samples</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>LD1s<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;H012C_9&quot;</span>, <span class="st">&quot;H012C_19&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>LD2s<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;H012C_9_2&quot;</span>, <span class="st">&quot;H012C_19_2&quot;</span>) </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>MSs<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;H012C_20_MS&quot;</span>, <span class="st">&quot;H012C_10_MS&quot;</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>FBs<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;NONE&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>TBs<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;NONE&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <section id="importing-required-datasets" class="level3">
 <h3 class="anchored" data-anchor-id="importing-required-datasets">Importing required datasets</h3>
 <p>IMPORTANT: after processing the data on SCIEX OS, export the entire results table as a .txt file. <u>Export all rows and all columns.</u> Do not export as a .csv or convert the table to excel, this will change how the data is formatted and the functions associated with glendR will not work.</p>
@@ -3257,7 +3276,7 @@ vertical-align: -.125em;
 </ul></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sciex<span class="ot">&lt;-</span><span class="fu">loadSciex</span>(<span class="at">file.path =</span> sciexPath)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>sciex<span class="ot">&lt;-</span><span class="fu">loadSciex</span>(<span class="at">file.path =</span> sciexPath)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="2" type="1">
 <li><p>Load excel files of the sample information, the following columns are required (in no particular order):</p>
@@ -3275,12 +3294,13 @@ vertical-align: -.125em;
 <li><p><strong>sedType</strong>- the type of sediment sample (“Core” or “Surface”) leave blank if not applicable (i.e., LCS samples)</p></li>
 <li><p><strong>fieldBlank</strong>- the name of the associated field blank</p></li>
 <li><p><strong>dilFactor</strong>- the dilution factor, if not diluted put “1” leave blank for LCS samples</p></li>
+<li><p><strong>rename</strong>- a column used to rename any samples from the SCIEX OS batch (useful for typos)</p></li>
 </ul></li>
 </ol>
 <p><u><strong>IMPORTANT:</strong></u> you must follow this <u>exactly</u> (spaces, capitalization, etc)</p>
 <p>This info file should include ALL sediment samples, MB samples, and OPR samples, MB and OPR samples will just have the Sample, Prep.Date, and Weight columns filled in.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>info<span class="ot">&lt;-</span><span class="fu">read_excel</span>(<span class="at">path =</span> infoPath)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>info<span class="ot">&lt;-</span><span class="fu">read_excel</span>(<span class="at">path =</span> infoPath)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="3" type="1">
 <li><p>Load an excel sheet that links which EIS and NIS analytes are associated with eachother</p>
@@ -3319,10 +3339,10 @@ vertical-align: -.125em;
 </ul></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>eis.nis<span class="ot">&lt;-</span><span class="fu">read_excel</span>(<span class="at">path =</span> eisnisPath,<span class="at">sheet=</span><span class="dv">3</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#remove any spaces in the names</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>eis.nis<span class="sc">$</span>EIS<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>, <span class="st">&quot;&quot;</span>, eis.nis<span class="sc">$</span>EIS)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>eis.nis<span class="sc">$</span>NIS<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>, <span class="st">&quot;&quot;</span>, eis.nis<span class="sc">$</span>NIS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>eis.nis<span class="ot">&lt;-</span><span class="fu">read_excel</span>(<span class="at">path =</span> eisnisPath,<span class="at">sheet=</span><span class="dv">3</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#remove any spaces in the names</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>eis.nis<span class="sc">$</span>EIS<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>, <span class="st">&quot;&quot;</span>, eis.nis<span class="sc">$</span>EIS)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>eis.nis<span class="sc">$</span>NIS<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>, <span class="st">&quot;&quot;</span>, eis.nis<span class="sc">$</span>NIS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="4" type="1">
 <li><p>Import the method detection limits (MDLs) for each analyte</p>
@@ -3332,8 +3352,8 @@ vertical-align: -.125em;
 </ul></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>mdl<span class="ot">&lt;-</span><span class="fu">read_excel</span>(mdlPath, <span class="at">sheet =</span> <span class="dv">2</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>mdl<span class="sc">$</span>Analyte<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>,<span class="st">&quot;&quot;</span>, mdl<span class="sc">$</span>Analyte)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mdl<span class="ot">&lt;-</span><span class="fu">read_excel</span>(mdlPath, <span class="at">sheet =</span> <span class="dv">2</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>mdl<span class="sc">$</span>Analyte<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>,<span class="st">&quot;&quot;</span>, mdl<span class="sc">$</span>Analyte)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="5" type="1">
 <li><p>Import the spike amounts for each EIS/NIS/Native PFAS</p>
@@ -3344,8 +3364,8 @@ vertical-align: -.125em;
 </ul></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>spike<span class="ot">&lt;-</span><span class="fu">read_excel</span>(spikePath, <span class="at">sheet=</span><span class="dv">3</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>spike<span class="sc">$</span>Component<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>,<span class="st">&quot;&quot;</span>, spike<span class="sc">$</span>Component)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>spike<span class="ot">&lt;-</span><span class="fu">read_excel</span>(spikePath, <span class="at">sheet=</span><span class="dv">3</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>spike<span class="sc">$</span>Component<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>,<span class="st">&quot;&quot;</span>, spike<span class="sc">$</span>Component)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now, everything should be uploaded to the R Global Environment and it is just a matter of tidying the data and applying flags. How glendR works is to separate the one large dataframe into smaller dataframes by sample type, then performing data manipulations and binding the smaller dataframes back into one large final dataset. The functions within glendR do this in the background and you will likely not see any of the temporary dfs.</p>
 <div class="quarto-figure quarto-figure-center">
@@ -3363,7 +3383,7 @@ vertical-align: -.125em;
 <p>The calibration curve should be checked such that the R2 is &gt;0.99 and everything looks linear and has enough points. Note: this should have been done on the SCIEX OS, this is just a formality to print off the calibration curve to show that it passed the initial QAQC checks.</p>
 <p>IMPORTANT: use ‘ggsave’ to save the plot to a file location.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>p1<span class="ot">&lt;-</span><span class="fu">calPlot</span>(<span class="at">df=</span>sciex, <span class="at">Title =</span> <span class="st">&quot;##TEXT##&quot;</span>, <span class="at">Subtitle =</span> <span class="st">&quot;###text###&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>p1<span class="ot">&lt;-</span><span class="fu">calPlot</span>(<span class="at">df=</span>sciex, <span class="at">Title =</span> <span class="st">&quot;##TEXT##&quot;</span>, <span class="at">Subtitle =</span> <span class="st">&quot;###text###&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="detection-limits" class="level4">
@@ -3372,7 +3392,7 @@ vertical-align: -.125em;
 <p>LLOD-lower limit (ng/mL)</p>
 <p>ULOD- upper limit (ng/mL)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dl<span class="ot">&lt;-</span><span class="fu">detectionLimits</span>(sciex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dl<span class="ot">&lt;-</span><span class="fu">detectionLimits</span>(sciex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="surrogate-recovery" class="level3">
@@ -3388,11 +3408,11 @@ vertical-align: -.125em;
 <li><p>it will return a smaller dataframe with the sample name, EIS name, calculated concentration, %recovery, and a matching id used to bind back together later on</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#get vectors of EIS and NIS</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>EIS<span class="ot">&lt;-</span><span class="fu">unique</span>(eis.nis<span class="sc">$</span>EIS)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>NIS<span class="ot">&lt;-</span><span class="fu">unique</span>(eis.nis<span class="sc">$</span>NIS)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">#create df of EIS recovery </span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>df.eis<span class="ot">&lt;-</span><span class="fu">EISrec</span>(sciex,EIS,NIS,eis.nis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#get vectors of EIS and NIS</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>EIS<span class="ot">&lt;-</span><span class="fu">unique</span>(eis.nis<span class="sc">$</span>EIS)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>NIS<span class="ot">&lt;-</span><span class="fu">unique</span>(eis.nis<span class="sc">$</span>NIS)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#create df of EIS recovery </span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>df.eis<span class="ot">&lt;-</span><span class="fu">EISrec</span>(sciex,EIS,NIS,eis.nis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="nis-recovery" class="level3">
@@ -3404,7 +3424,7 @@ vertical-align: -.125em;
 <li><p>it will return a smaller dataframe with the sample name, NIS name, recovery, and matching id to use to bind back together to the main ddataframe at a later time</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df.nis<span class="ot">&lt;-</span><span class="fu">NISrec</span>(sciex, <span class="at">NIS=</span>NIS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df.nis<span class="ot">&lt;-</span><span class="fu">NISrec</span>(sciex, <span class="at">NIS=</span>NIS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="ion-ratio" class="level3">
@@ -3416,7 +3436,7 @@ vertical-align: -.125em;
 <li><p>this returns a smaller dataframe with the sample name, component names, the ion ratio, the % difference, and a matching id used later on</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df.ir<span class="ot">&lt;-</span><span class="fu">IonRatio</span>(sciex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df.ir<span class="ot">&lt;-</span><span class="fu">IonRatio</span>(sciex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="retention-time" class="level3">
@@ -3429,7 +3449,7 @@ vertical-align: -.125em;
 <li><p>this returns a smaller dataframe with the sample name, analyte, retention time, the changes from the cal standards (deltaRT), and a matching id used later</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df.rt<span class="ot">&lt;-</span><span class="fu">retention</span>(sciex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df.rt<span class="ot">&lt;-</span><span class="fu">retention</span>(sciex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -3443,10 +3463,10 @@ vertical-align: -.125em;
 <p><strong>Accuracy:</strong> the accuracy (or recovery) of the calculated concentration to the actual spiked in concentration</p>
 <p><strong>Acquisition.Date…Time:</strong> the time of injection</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#remove unnecessary sample types</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span>sciex<span class="sc">%&gt;%</span><span class="fu">filter</span>(Sample.Type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Unknown&quot;</span>,<span class="st">&quot;Quality Control&quot;</span>,<span class="st">&quot;Blank&quot;</span>))<span class="sc">%&gt;%</span><span class="fu">filter</span>(Component.Type <span class="sc">!=</span><span class="st">&quot;Qualifiers&quot;</span>)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span>df1[,<span class="fu">c</span>(<span class="st">&quot;Sample.Name&quot;</span>,<span class="st">&quot;Sample.Type&quot;</span>,<span class="st">&quot;Component.Name&quot;</span>,<span class="st">&quot;Component.Type&quot;</span>,<span class="st">&quot;IS.Name&quot;</span>,<span class="st">&quot;IS.Actual.Concentration&quot;</span>,<span class="st">&quot;Actual.Concentration&quot;</span>,<span class="st">&quot;Calculated.Concentration&quot;</span>,<span class="st">&quot;Acquisition.Date...Time&quot;</span>, <span class="st">&quot;Accuracy&quot;</span>,<span class="st">&quot;Retention.Time&quot;</span>)]</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>Component.Name<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>,<span class="st">&quot;&quot;</span>, df1<span class="sc">$</span>Component.Name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#remove unnecessary sample types</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span>sciex<span class="sc">%&gt;%</span><span class="fu">filter</span>(Sample.Type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Unknown&quot;</span>,<span class="st">&quot;Quality Control&quot;</span>,<span class="st">&quot;Blank&quot;</span>))<span class="sc">%&gt;%</span><span class="fu">filter</span>(Component.Type <span class="sc">!=</span><span class="st">&quot;Qualifiers&quot;</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span>df1[,<span class="fu">c</span>(<span class="st">&quot;Sample.Name&quot;</span>,<span class="st">&quot;Sample.Type&quot;</span>,<span class="st">&quot;Component.Name&quot;</span>,<span class="st">&quot;Component.Type&quot;</span>,<span class="st">&quot;IS.Name&quot;</span>,<span class="st">&quot;IS.Actual.Concentration&quot;</span>,<span class="st">&quot;Actual.Concentration&quot;</span>,<span class="st">&quot;Calculated.Concentration&quot;</span>,<span class="st">&quot;Acquisition.Date...Time&quot;</span>, <span class="st">&quot;Accuracy&quot;</span>,<span class="st">&quot;Retention.Time&quot;</span>)]</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>Component.Name<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>,<span class="st">&quot;&quot;</span>, df1<span class="sc">$</span>Component.Name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="sample-types" class="level3">
 <h3 class="anchored" data-anchor-id="sample-types">Sample Types:</h3>
@@ -3457,8 +3477,7 @@ vertical-align: -.125em;
 <li><p>it overrides the “Sample.Type” column and renames it “resultQcIdentifier”</p></li>
 <li><p>vectors of unique sample names are required to determine <u>matrix spikes</u>, <u>duplicates</u>, f<u>ield blanks</u>, and <u>travel blanks</u></p>
 <ul>
-<li><p>These are <em>manually</em> added</p></li>
-<li><p>if there are none of these sample types in the batch, simply type “NONE” for the sample names (assuming that no actual sample is named ’NONE”)</p></li>
+<li>These are <em>manually</em> added in the beginning (section: Set the sample types)</li>
 </ul></li>
 <li><p>Correct naming of samples in the SCIEX OS (during batch set-up) must be used, renaming can be done seperatly if any typos exist. The naming rules are as follows, and case is ignores (i.e., any pattern of upper or lower case will match):</p>
 <ul>
@@ -3472,20 +3491,14 @@ vertical-align: -.125em;
 <li><p>it saves the “Sample.Type” column as this will be used in the final dataset and for other functions later on</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>LD1s<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;H012C_9&quot;</span>, <span class="st">&quot;H012C_19&quot;</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>LD2s<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;H012C_9_2&quot;</span>, <span class="st">&quot;H012C_19_2&quot;</span>) <span class="co">#the &quot;_2&quot; naming system is used to signify the duplicate sample</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>MSs<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;H012C_20_MS&quot;</span>, <span class="st">&quot;H012C_10_MS&quot;</span>)</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>FBs<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;NONE&quot;</span>)</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>TBs<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;NONE&quot;</span>)</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span><span class="fu">sampleTypes</span>(df1, <span class="at">MS.Samples =</span> MSs, <span class="at">LD1.Samples =</span> LD1s,<span class="at">LD2.Samples =</span> LD2s, <span class="at">Field.Blanks =</span> FBs, <span class="at">Travel.Blanks =</span> TBs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span><span class="fu">sampleTypes</span>(df1, <span class="at">MS.Samples =</span> MSs, <span class="at">LD1.Samples =</span> LD1s,<span class="at">LD2.Samples =</span> LD2s, <span class="at">Field.Blanks =</span> FBs, <span class="at">Travel.Blanks =</span> TBs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="analyte-type" class="level3">
 <h3 class="anchored" data-anchor-id="analyte-type">Analyte Type:</h3>
 <p>Change the analyte types to either TRG,SUR, or IS</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span><span class="fu">analyteType</span>(df1, <span class="at">NIS=</span>NIS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span><span class="fu">analyteType</span>(df1, <span class="at">NIS=</span>NIS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="adding-sample-information" class="level3">
@@ -3495,64 +3508,64 @@ vertical-align: -.125em;
 <p>Note: each sample must have a unique name, even the QAQC samples (CCVs, OPRs, blanks, etc.)</p>
 <p><u><strong>Sample Weights</strong></u></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>weightVolumeAnalyzed<span class="ot">&lt;-</span>info<span class="sc">$</span>Weight[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)]</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>weightVolumeAnalyzed<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>Sample.Type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;CLB&quot;</span>,<span class="st">&quot;CCV&quot;</span>, <span class="st">&quot;CLC&quot;</span>,<span class="st">&quot;LVM&quot;</span>,<span class="st">&quot;CAL&quot;</span>), <span class="dv">1</span>, df1<span class="sc">$</span>weightVolumeAnalyzed)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>weightVolumeUnits<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>Sample.Type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;CLB&quot;</span>,<span class="st">&quot;CCV&quot;</span>, <span class="st">&quot;CLC&quot;</span>,<span class="st">&quot;LVM&quot;</span>,<span class="st">&quot;CAL&quot;</span>), <span class="st">&quot;mL&quot;</span>, <span class="st">&quot;g&quot;</span>)</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>weightBasis<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>weightVolumeUnits<span class="sc">==</span><span class="st">&quot;g&quot;</span>, <span class="st">&quot;DRY&quot;</span>, <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>weightVolumeAnalyzed<span class="ot">&lt;-</span>info<span class="sc">$</span>Weight[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)]</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>weightVolumeAnalyzed<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>Sample.Type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;CLB&quot;</span>,<span class="st">&quot;CCV&quot;</span>, <span class="st">&quot;CLC&quot;</span>,<span class="st">&quot;LVM&quot;</span>,<span class="st">&quot;CAL&quot;</span>), <span class="dv">1</span>, df1<span class="sc">$</span>weightVolumeAnalyzed)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>weightVolumeUnits<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>Sample.Type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;CLB&quot;</span>,<span class="st">&quot;CCV&quot;</span>, <span class="st">&quot;CLC&quot;</span>,<span class="st">&quot;LVM&quot;</span>,<span class="st">&quot;CAL&quot;</span>), <span class="st">&quot;mL&quot;</span>, <span class="st">&quot;g&quot;</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>weightBasis<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>weightVolumeUnits<span class="sc">==</span><span class="st">&quot;g&quot;</span>, <span class="st">&quot;DRY&quot;</span>, <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><u><strong>Core Intervals</strong></u></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>topOfInterval<span class="ot">&lt;-</span>info<span class="sc">$</span>Upper.Depth[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)]</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>bottomOfInterval<span class="ot">&lt;-</span>info<span class="sc">$</span>Lower.Depth[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)]</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>depthUnit<span class="ot">&lt;-</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(df1<span class="sc">$</span>topOfInterval),<span class="cn">NA</span>,<span class="st">&quot;cm&quot;</span>)</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">#sedtype--used in later formatting</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>sedType<span class="ot">&lt;-</span>info<span class="sc">$</span>sedType[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>topOfInterval<span class="ot">&lt;-</span>info<span class="sc">$</span>Upper.Depth[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>bottomOfInterval<span class="ot">&lt;-</span>info<span class="sc">$</span>Lower.Depth[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)]</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>depthUnit<span class="ot">&lt;-</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(df1<span class="sc">$</span>topOfInterval),<span class="cn">NA</span>,<span class="st">&quot;cm&quot;</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">#sedtype--used in later formatting</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>sedType<span class="ot">&lt;-</span>info<span class="sc">$</span>sedType[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><u><strong>Dates and Times</strong></u></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>sampleDate<span class="ot">&lt;-</span>info<span class="sc">$</span>Sample.Date[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)]</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>sampleTime<span class="ot">&lt;-</span>info<span class="sc">$</span>Sample.Time[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co">#have to reformat time to remove the date</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>h<span class="ot">&lt;-</span><span class="fu">hour</span>(df1<span class="sc">$</span>sampleTime)</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>m<span class="ot">&lt;-</span><span class="fu">minute</span>(df1<span class="sc">$</span>sampleTime)</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>time<span class="ot">&lt;-</span><span class="fu">paste</span>(df1<span class="sc">$</span>h, df1<span class="sc">$</span>m, <span class="at">sep =</span> <span class="st">&quot;:&quot;</span>)</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>sampleTime<span class="ot">&lt;-</span>df1<span class="sc">$</span>time</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span>df1[,<span class="sc">-</span><span class="fu">which</span>(<span class="fu">names</span>(df1) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;h&quot;</span>,<span class="st">&quot;m&quot;</span>,<span class="st">&quot;time&quot;</span>))]</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>sampleTime<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot;NA:NA&quot;</span>,<span class="cn">NA</span>, df1<span class="sc">$</span>sampleTime)</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>samplePrepDate<span class="ot">&lt;-</span>info<span class="sc">$</span>Prep.Date[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>sampleDate<span class="ot">&lt;-</span>info<span class="sc">$</span>Sample.Date[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)]</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>sampleTime<span class="ot">&lt;-</span>info<span class="sc">$</span>Sample.Time[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">#have to reformat time to remove the date</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>h<span class="ot">&lt;-</span><span class="fu">hour</span>(df1<span class="sc">$</span>sampleTime)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>m<span class="ot">&lt;-</span><span class="fu">minute</span>(df1<span class="sc">$</span>sampleTime)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>time<span class="ot">&lt;-</span><span class="fu">paste</span>(df1<span class="sc">$</span>h, df1<span class="sc">$</span>m, <span class="at">sep =</span> <span class="st">&quot;:&quot;</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>sampleTime<span class="ot">&lt;-</span>df1<span class="sc">$</span>time</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span>df1[,<span class="sc">-</span><span class="fu">which</span>(<span class="fu">names</span>(df1) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;h&quot;</span>,<span class="st">&quot;m&quot;</span>,<span class="st">&quot;time&quot;</span>))]</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>sampleTime<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot;NA:NA&quot;</span>,<span class="cn">NA</span>, df1<span class="sc">$</span>sampleTime)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>samplePrepDate<span class="ot">&lt;-</span>info<span class="sc">$</span>Prep.Date[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><u><strong>Injection Time</strong></u></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>analysisDateTime<span class="ot">&lt;-</span><span class="fu">mdy_hms</span>(df1<span class="sc">$</span>Acquisition.Date...Time)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>analysisDateTime<span class="ot">&lt;-</span><span class="fu">mdy_hms</span>(df1<span class="sc">$</span>Acquisition.Date...Time)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><u><strong>Location &amp; FBs</strong></u></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>lat<span class="ot">&lt;-</span>info<span class="sc">$</span>Lat[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>long<span class="ot">&lt;-</span>info<span class="sc">$</span>Lon[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>depth_m<span class="ot">&lt;-</span>info<span class="sc">$</span>depth[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>fieldBlank<span class="ot">&lt;-</span>info<span class="sc">$</span>fieldBlank[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>lat<span class="ot">&lt;-</span>info<span class="sc">$</span>Lat[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>long<span class="ot">&lt;-</span>info<span class="sc">$</span>Lon[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>depth_m<span class="ot">&lt;-</span>info<span class="sc">$</span>depth[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>fieldBlank<span class="ot">&lt;-</span>info<span class="sc">$</span>fieldBlank[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><u><strong>Dilutions:</strong></u></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>dilutionFactor<span class="ot">&lt;-</span>info<span class="sc">$</span>dilFactor[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>dilutionFactor<span class="ot">&lt;-</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(df1<span class="sc">$</span>dilutionFactor),<span class="dv">1</span>,df1<span class="sc">$</span>dilutionFactor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>dilutionFactor<span class="ot">&lt;-</span>info<span class="sc">$</span>dilFactor[<span class="fu">match</span>(df1<span class="sc">$</span>Sample.Name, info<span class="sc">$</span>Sample)] </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>dilutionFactor<span class="ot">&lt;-</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(df1<span class="sc">$</span>dilutionFactor),<span class="dv">1</span>,df1<span class="sc">$</span>dilutionFactor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><u><strong>Detection Limits</strong></u></p>
 <p>match the MDL with the mdl file, the LOQ is calculated by the ‘loq’ function in the glendR package and only requires a data frame with a mdl column labeled “mdl”</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">#gets the mdl in the matching units (ng/mL or ng/g)</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>mdl<span class="ot">&lt;-</span><span class="fu">round</span>(mdl<span class="sc">$</span><span class="st">`</span><span class="at">MDL (ng/mL)</span><span class="st">`</span>[<span class="fu">match</span>(df1<span class="sc">$</span>Component.Name, mdl<span class="sc">$</span>Analyte)]<span class="sc">/</span>df1<span class="sc">$</span>weightVolumeAnalyzed, <span class="at">digits =</span> <span class="dv">3</span>)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co">#account for the dilution if any</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>mdl<span class="ot">&lt;-</span>df1<span class="sc">$</span>mdl<span class="sc">*</span>df1<span class="sc">$</span>dilutionFactor</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span><span class="fu">loq</span>(df1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#gets the mdl in the matching units (ng/mL or ng/g)</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>mdl<span class="ot">&lt;-</span><span class="fu">round</span>(mdl<span class="sc">$</span><span class="st">`</span><span class="at">MDL (ng/mL)</span><span class="st">`</span>[<span class="fu">match</span>(df1<span class="sc">$</span>Component.Name, mdl<span class="sc">$</span>Analyte)]<span class="sc">/</span>df1<span class="sc">$</span>weightVolumeAnalyzed, <span class="at">digits =</span> <span class="dv">3</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co">#account for the dilution if any</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>mdl<span class="ot">&lt;-</span>df1<span class="sc">$</span>mdl<span class="sc">*</span>df1<span class="sc">$</span>dilutionFactor</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span><span class="fu">loq</span>(df1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><u><strong>Spike Levels and CAS#</strong></u></p>
 <p>Don’t need to use spike levels from excel sheet if correctly processed the data on SCIEX OS, can use ‘Actual.Concentration’</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>spikeLevel<span class="ot">&lt;-</span>df1<span class="sc">$</span>Actual.Concentration</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>spikeUnits<span class="ot">&lt;-</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(df1<span class="sc">$</span>spikeLevel), <span class="cn">NA</span>, <span class="st">&quot;ng&quot;</span>)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>analyteCasNum<span class="ot">&lt;-</span>spike<span class="sc">$</span>CAS[<span class="fu">match</span>(df1<span class="sc">$</span>Component.Name, spike<span class="sc">$</span>Component)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>spikeLevel<span class="ot">&lt;-</span>df1<span class="sc">$</span>Actual.Concentration</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>spikeUnits<span class="ot">&lt;-</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(df1<span class="sc">$</span>spikeLevel), <span class="cn">NA</span>, <span class="st">&quot;ng&quot;</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>analyteCasNum<span class="ot">&lt;-</span>spike<span class="sc">$</span>CAS[<span class="fu">match</span>(df1<span class="sc">$</span>Component.Name, spike<span class="sc">$</span>Component)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="results-and-recoveries" class="level3">
@@ -3595,57 +3608,57 @@ vertical-align: -.125em;
 <p>TRG and SUR analytes have results in weight by mass (volume) units while IS analytes do not have any results. Additionally, SUR analytes have a recovery % that is associated with the result and spike amount. IS analytes also have a recovery % associated by peak area (peak areas are not reported in the EDD).</p>
 <p>Here, we get to use our previously calculated EIS and NIS recoveries.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>matchID<span class="ot">&lt;-</span><span class="fu">paste</span>(df1<span class="sc">$</span>Sample.Name, df1<span class="sc">$</span>Component.Name)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisConc<span class="ot">&lt;-</span>df.eis<span class="sc">$</span>Calculated.Concentration[<span class="fu">match</span>(df1<span class="sc">$</span>matchID, df.eis<span class="sc">$</span>matchId)] </span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisRec<span class="ot">&lt;-</span>df.eis<span class="sc">$</span>sr[<span class="fu">match</span>(df1<span class="sc">$</span>matchID, df.eis<span class="sc">$</span>matchId)]</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>nisRec<span class="ot">&lt;-</span>df.nis<span class="sc">$</span>nisRec[<span class="fu">match</span>(df1<span class="sc">$</span>matchID, df.nis<span class="sc">$</span>matchId)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>matchID<span class="ot">&lt;-</span><span class="fu">paste</span>(df1<span class="sc">$</span>Sample.Name, df1<span class="sc">$</span>Component.Name)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisConc<span class="ot">&lt;-</span>df.eis<span class="sc">$</span>Calculated.Concentration[<span class="fu">match</span>(df1<span class="sc">$</span>matchID, df.eis<span class="sc">$</span>matchId)] </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisRec<span class="ot">&lt;-</span>df.eis<span class="sc">$</span>sr[<span class="fu">match</span>(df1<span class="sc">$</span>matchID, df.eis<span class="sc">$</span>matchId)]</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>nisRec<span class="ot">&lt;-</span>df.nis<span class="sc">$</span>nisRec[<span class="fu">match</span>(df1<span class="sc">$</span>matchID, df.nis<span class="sc">$</span>matchId)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now we can work with the TRG analytes</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>trgConc<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;TRG&quot;</span>, df1<span class="sc">$</span>Calculated.Concentration, <span class="cn">NA</span>)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co">#trg analytes for % recovery</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>trgLCSrec<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;TRG&quot;</span>, <span class="fu">if_else</span>(df1<span class="sc">$</span>resultQcIdentifier <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;CLC&quot;</span>,<span class="st">&quot;LVM&quot;</span>,<span class="st">&quot;CAL&quot;</span>,<span class="st">&quot;OPR&quot;</span>), (df1<span class="sc">$</span>Calculated.Concentration<span class="sc">/</span>df1<span class="sc">$</span>Actual.Concentration<span class="sc">*</span><span class="dv">100</span>), <span class="cn">NA</span>),<span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>trgConc<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;TRG&quot;</span>, df1<span class="sc">$</span>Calculated.Concentration, <span class="cn">NA</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co">#trg analytes for % recovery</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>trgLCSrec<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;TRG&quot;</span>, <span class="fu">if_else</span>(df1<span class="sc">$</span>resultQcIdentifier <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;CLC&quot;</span>,<span class="st">&quot;LVM&quot;</span>,<span class="st">&quot;CAL&quot;</span>,<span class="st">&quot;OPR&quot;</span>), (df1<span class="sc">$</span>Calculated.Concentration<span class="sc">/</span>df1<span class="sc">$</span>Actual.Concentration<span class="sc">*</span><span class="dv">100</span>), <span class="cn">NA</span>),<span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Finally, we can combine columns.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#get recovery column</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">paste0</span>(df1<span class="sc">$</span>eisRec, df1<span class="sc">$</span>nisRec, df1<span class="sc">$</span>trgLCSrec)</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;&quot;</span>,df1<span class="sc">$</span>recovery)</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">as.numeric</span>(df1<span class="sc">$</span>recovery)</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">round</span>(df1<span class="sc">$</span>recovery, <span class="at">digits =</span> <span class="dv">1</span>)</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="co">#get result column</span></span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span><span class="fu">paste0</span>(df1<span class="sc">$</span>eisConc, df1<span class="sc">$</span>trgConc)</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;&quot;</span>,df1<span class="sc">$</span>result)</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span><span class="fu">as.numeric</span>(df1<span class="sc">$</span>result)</span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span><span class="fu">round</span>(df1<span class="sc">$</span>result, <span class="at">digits =</span> <span class="dv">5</span>)</span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="co">#change NA values to 0 for TRG and SUR analytes, update recovery if necessary</span></span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(df1<span class="sc">$</span>result), <span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;IS&quot;</span>, df1<span class="sc">$</span>result, <span class="dv">0</span>), df1<span class="sc">$</span>result)</span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;SUR&quot;</span>, <span class="fu">if_else</span>(df1<span class="sc">$</span>result<span class="sc">==</span><span class="fl">0.0</span>, <span class="dv">0</span>, df1<span class="sc">$</span>recovery), df1<span class="sc">$</span>recovery)</span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>resultQcIdentifier <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;CLC&quot;</span>,<span class="st">&quot;LVM&quot;</span>,<span class="st">&quot;CAL&quot;</span>,<span class="st">&quot;OPR&quot;</span>), <span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;TRG&quot;</span>, <span class="fu">if_else</span>(df1<span class="sc">$</span>result<span class="sc">==</span><span class="fl">0.0</span>, <span class="dv">0</span>, df1<span class="sc">$</span>recovery), df1<span class="sc">$</span>recovery),df1<span class="sc">$</span>recovery)</span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a><span class="co">#change the results to the correct units (ng/g) for solids, (ng/mL) for QC samples</span></span>
-<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span>df1<span class="sc">$</span>result<span class="sc">/</span>df1<span class="sc">$</span>weightVolumeAnalyzed</span>
-<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a><span class="co">#get the correct diluted adjusted concentration</span></span>
-<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;TRG&quot;</span>, df1<span class="sc">$</span>result<span class="sc">*</span>df1<span class="sc">$</span>dilutionFactor, df1<span class="sc">$</span>result)</span>
-<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>resultUnits<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>weightVolumeUnits<span class="sc">==</span><span class="st">&quot;mL&quot;</span>, <span class="st">&quot;ng/mL&quot;</span>, <span class="fu">if_else</span>(df1<span class="sc">$</span>weightVolumeUnits<span class="sc">==</span><span class="st">&quot;g&quot;</span>, <span class="st">&quot;ng/g&quot;</span>, <span class="cn">NA</span>))</span>
-<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>resultUnits<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;IS&quot;</span>, <span class="cn">NA</span>, df1<span class="sc">$</span>resultUnits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#get recovery column</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">paste0</span>(df1<span class="sc">$</span>eisRec, df1<span class="sc">$</span>nisRec, df1<span class="sc">$</span>trgLCSrec)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;&quot;</span>,df1<span class="sc">$</span>recovery)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">as.numeric</span>(df1<span class="sc">$</span>recovery)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">round</span>(df1<span class="sc">$</span>recovery, <span class="at">digits =</span> <span class="dv">1</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="co">#get result column</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span><span class="fu">paste0</span>(df1<span class="sc">$</span>eisConc, df1<span class="sc">$</span>trgConc)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;&quot;</span>,df1<span class="sc">$</span>result)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span><span class="fu">as.numeric</span>(df1<span class="sc">$</span>result)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span><span class="fu">round</span>(df1<span class="sc">$</span>result, <span class="at">digits =</span> <span class="dv">5</span>)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="co">#change NA values to 0 for TRG and SUR analytes, update recovery if necessary</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(df1<span class="sc">$</span>result), <span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;IS&quot;</span>, df1<span class="sc">$</span>result, <span class="dv">0</span>), df1<span class="sc">$</span>result)</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;SUR&quot;</span>, <span class="fu">if_else</span>(df1<span class="sc">$</span>result<span class="sc">==</span><span class="fl">0.0</span>, <span class="dv">0</span>, df1<span class="sc">$</span>recovery), df1<span class="sc">$</span>recovery)</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>resultQcIdentifier <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;CLC&quot;</span>,<span class="st">&quot;LVM&quot;</span>,<span class="st">&quot;CAL&quot;</span>,<span class="st">&quot;OPR&quot;</span>), <span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;TRG&quot;</span>, <span class="fu">if_else</span>(df1<span class="sc">$</span>result<span class="sc">==</span><span class="fl">0.0</span>, <span class="dv">0</span>, df1<span class="sc">$</span>recovery), df1<span class="sc">$</span>recovery),df1<span class="sc">$</span>recovery)</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a><span class="co">#change the results to the correct units (ng/g) for solids, (ng/mL) for QC samples</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span>df1<span class="sc">$</span>result<span class="sc">/</span>df1<span class="sc">$</span>weightVolumeAnalyzed</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a><span class="co">#get the correct diluted adjusted concentration</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>result<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;TRG&quot;</span>, df1<span class="sc">$</span>result<span class="sc">*</span>df1<span class="sc">$</span>dilutionFactor, df1<span class="sc">$</span>result)</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>resultUnits<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>weightVolumeUnits<span class="sc">==</span><span class="st">&quot;mL&quot;</span>, <span class="st">&quot;ng/mL&quot;</span>, <span class="fu">if_else</span>(df1<span class="sc">$</span>weightVolumeUnits<span class="sc">==</span><span class="st">&quot;g&quot;</span>, <span class="st">&quot;ng/g&quot;</span>, <span class="cn">NA</span>))</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>resultUnits<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>analyteType<span class="sc">==</span><span class="st">&quot;IS&quot;</span>, <span class="cn">NA</span>, df1<span class="sc">$</span>resultUnits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>EIS Flagging</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#flagging for EIS</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>IS.Name<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>,<span class="st">&quot;&quot;</span>, df1<span class="sc">$</span>IS.Name)</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>matchID2<span class="ot">&lt;-</span><span class="fu">paste</span>(df1<span class="sc">$</span>Sample.Name, df1<span class="sc">$</span>IS.Name)</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisrec2<span class="ot">&lt;-</span>df.eis<span class="sc">$</span>sr[<span class="fu">match</span>(df1<span class="sc">$</span>matchID2, df.eis<span class="sc">$</span>matchId)]</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisFlag1<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>eisRec<span class="sc">&lt;</span><span class="dv">20</span><span class="sc">|</span>df1<span class="sc">$</span>eisRec<span class="sc">&gt;</span><span class="dv">150</span>, <span class="st">&quot;FSF&quot;</span>,<span class="cn">NA</span>)</span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisFlag2<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>eisrec2<span class="sc">&lt;</span><span class="dv">20</span><span class="sc">|</span>df1<span class="sc">$</span>eisrec2<span class="sc">&gt;</span><span class="dv">150</span>, <span class="st">&quot;FSF&quot;</span>, <span class="cn">NA</span>)</span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisLo<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>eisrec2<span class="sc">&lt;</span><span class="dv">20</span>, <span class="st">&quot;LOB&quot;</span>, <span class="cn">NA</span>)</span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisHi<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>eisrec2<span class="sc">&gt;</span><span class="dv">150</span> <span class="sc">&amp;</span> df1<span class="sc">$</span>result<span class="sc">&gt;</span>df1<span class="sc">$</span>mdl, <span class="st">&quot;HIB&quot;</span>, <span class="cn">NA</span>)</span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="co">#flagging for NIS</span></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>nis<span class="ot">&lt;-</span>eis.nis<span class="sc">$</span>NIS[<span class="fu">match</span>(df1<span class="sc">$</span>IS.Name, eis.nis<span class="sc">$</span>EIS)]</span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>matchID3<span class="ot">&lt;-</span><span class="fu">paste</span>(df1<span class="sc">$</span>Sample.Name, df1<span class="sc">$</span>nis)</span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>nisrec2<span class="ot">&lt;-</span>df.nis<span class="sc">$</span>nisRec[<span class="fu">match</span>(df1<span class="sc">$</span>matchID3, df.nis<span class="sc">$</span>matchId)]</span>
-<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>nisFlag1<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>nisRec<span class="sc">&lt;</span><span class="dv">30</span>, <span class="st">&quot;FIS&quot;</span>, <span class="cn">NA</span>)</span>
-<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>nisFlag2<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>nisrec2<span class="sc">&lt;</span><span class="dv">30</span>, <span class="st">&quot;FIS&quot;</span>, <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">#flagging for EIS</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>IS.Name<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>,<span class="st">&quot;&quot;</span>, df1<span class="sc">$</span>IS.Name)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>matchID2<span class="ot">&lt;-</span><span class="fu">paste</span>(df1<span class="sc">$</span>Sample.Name, df1<span class="sc">$</span>IS.Name)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisrec2<span class="ot">&lt;-</span>df.eis<span class="sc">$</span>sr[<span class="fu">match</span>(df1<span class="sc">$</span>matchID2, df.eis<span class="sc">$</span>matchId)]</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisFlag1<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>eisRec<span class="sc">&lt;</span><span class="dv">20</span><span class="sc">|</span>df1<span class="sc">$</span>eisRec<span class="sc">&gt;</span><span class="dv">150</span>, <span class="st">&quot;FSF&quot;</span>,<span class="cn">NA</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisFlag2<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>eisrec2<span class="sc">&lt;</span><span class="dv">20</span><span class="sc">|</span>df1<span class="sc">$</span>eisrec2<span class="sc">&gt;</span><span class="dv">150</span>, <span class="st">&quot;FSF&quot;</span>, <span class="cn">NA</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisLo<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>eisrec2<span class="sc">&lt;</span><span class="dv">20</span>, <span class="st">&quot;LOB&quot;</span>, <span class="cn">NA</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>eisHi<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>eisrec2<span class="sc">&gt;</span><span class="dv">150</span> <span class="sc">&amp;</span> df1<span class="sc">$</span>result<span class="sc">&gt;</span>df1<span class="sc">$</span>mdl, <span class="st">&quot;HIB&quot;</span>, <span class="cn">NA</span>)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="co">#flagging for NIS</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>nis<span class="ot">&lt;-</span>eis.nis<span class="sc">$</span>NIS[<span class="fu">match</span>(df1<span class="sc">$</span>IS.Name, eis.nis<span class="sc">$</span>EIS)]</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>matchID3<span class="ot">&lt;-</span><span class="fu">paste</span>(df1<span class="sc">$</span>Sample.Name, df1<span class="sc">$</span>nis)</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>nisrec2<span class="ot">&lt;-</span>df.nis<span class="sc">$</span>nisRec[<span class="fu">match</span>(df1<span class="sc">$</span>matchID3, df.nis<span class="sc">$</span>matchId)]</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>nisFlag1<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>nisRec<span class="sc">&lt;</span><span class="dv">30</span>, <span class="st">&quot;FIS&quot;</span>, <span class="cn">NA</span>)</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>nisFlag2<span class="ot">&lt;-</span><span class="fu">if_else</span>(df1<span class="sc">$</span>nisrec2<span class="sc">&lt;</span><span class="dv">30</span>, <span class="st">&quot;FIS&quot;</span>, <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="duplicates" class="level3">
@@ -3660,7 +3673,7 @@ vertical-align: -.125em;
 <li><p>‘mdl’ column: column with the mdls in the correct units (ng/g)</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span><span class="fu">rpd</span>(df1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span><span class="fu">rpd</span>(df1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="matrix-spikes" class="level3">
@@ -3677,12 +3690,12 @@ vertical-align: -.125em;
 </ul>
 <p>Note: this will also remove the “_MS” from the Sample.Name column so be aware that differentiating LMS and RFS samples will be done with Sample.Type or resultQcIdentifier columns</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span><span class="fu">msRecovery</span>(df1)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">paste0</span>(df1<span class="sc">$</span>recovery, df1<span class="sc">$</span>MSrec)</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;&quot;</span>,df1<span class="sc">$</span>recovery)</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">as.numeric</span>(df1<span class="sc">$</span>recovery)</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">round</span>(df1<span class="sc">$</span>recovery,<span class="at">digits =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>df1<span class="ot">&lt;-</span><span class="fu">msRecovery</span>(df1)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">paste0</span>(df1<span class="sc">$</span>recovery, df1<span class="sc">$</span>MSrec)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot;NA&quot;</span>,<span class="st">&quot;&quot;</span>,df1<span class="sc">$</span>recovery)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">as.numeric</span>(df1<span class="sc">$</span>recovery)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>recovery<span class="ot">&lt;-</span><span class="fu">round</span>(df1<span class="sc">$</span>recovery,<span class="at">digits =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -3693,11 +3706,11 @@ vertical-align: -.125em;
 <h3 class="anchored" data-anchor-id="ion-ratio-1">Ion ratio</h3>
 <p>add a column that has the % difference from the ion ratios, this will be used to flag later on</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span>df1</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>ionratio<span class="ot">&lt;-</span>df.ir<span class="sc">$</span>Ion.Ratio.Check[<span class="fu">match</span>(df2<span class="sc">$</span>matchID, df.ir<span class="sc">$</span>matchId)]</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>IRflag<span class="ot">&lt;-</span><span class="fu">if_else</span>(df2<span class="sc">$</span>ionratio<span class="sc">&lt;</span><span class="dv">50</span>, <span class="st">&quot;ISO&quot;</span>, <span class="cn">NA</span>)</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>IRflag<span class="ot">&lt;-</span><span class="fu">if_else</span>(df2<span class="sc">$</span>ionratio<span class="sc">&gt;</span><span class="dv">150</span>, <span class="st">&quot;ISO&quot;</span>, df2<span class="sc">$</span>IRflag)</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>IRflag<span class="ot">&lt;-</span><span class="fu">if_else</span>(df2<span class="sc">$</span>result<span class="sc">&gt;</span><span class="dv">2</span><span class="sc">*</span>df2<span class="sc">$</span>quantificationLimit, df2<span class="sc">$</span>IRflag, <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span>df1</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>ionratio<span class="ot">&lt;-</span>df.ir<span class="sc">$</span>Ion.Ratio.Check[<span class="fu">match</span>(df2<span class="sc">$</span>matchID, df.ir<span class="sc">$</span>matchId)]</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>IRflag<span class="ot">&lt;-</span><span class="fu">if_else</span>(df2<span class="sc">$</span>ionratio<span class="sc">&lt;</span><span class="dv">50</span>, <span class="st">&quot;ISO&quot;</span>, <span class="cn">NA</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>IRflag<span class="ot">&lt;-</span><span class="fu">if_else</span>(df2<span class="sc">$</span>ionratio<span class="sc">&gt;</span><span class="dv">150</span>, <span class="st">&quot;ISO&quot;</span>, df2<span class="sc">$</span>IRflag)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>IRflag<span class="ot">&lt;-</span><span class="fu">if_else</span>(df2<span class="sc">$</span>result<span class="sc">&gt;</span><span class="dv">2</span><span class="sc">*</span>df2<span class="sc">$</span>quantificationLimit, df2<span class="sc">$</span>IRflag, <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="detection" class="level3">
@@ -3711,16 +3724,16 @@ vertical-align: -.125em;
 <li><p>GTL: if above the highest calibration (ULOD ng/mL)</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">limits</span>(df2, dl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">limits</span>(df2, dl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="retention-time-1" class="level3">
 <h3 class="anchored" data-anchor-id="retention-time-1">Retention Time:</h3>
 <p>add the delta RT (min) and flag (if a detect &gt;LTL), this was already calculated by the retentionTime function and the df.rt df was made.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>rtdelta<span class="ot">&lt;-</span>df.rt<span class="sc">$</span>deltaRT[<span class="fu">match</span>(df2<span class="sc">$</span>matchID, df.rt<span class="sc">$</span>matchId)]</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>rtFlag<span class="ot">&lt;-</span><span class="fu">if_else</span>(df2<span class="sc">$</span>rtdelta<span class="sc">&gt;</span><span class="fl">0.25</span>, <span class="st">&quot;FDC&quot;</span>, <span class="cn">NA</span>)</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>rtFlag<span class="ot">&lt;-</span><span class="fu">if_else</span>(df2<span class="sc">$</span>limFlag<span class="sc">==</span><span class="st">&quot;LTL&quot;</span>, <span class="cn">NA</span>, df2<span class="sc">$</span>rtFlag)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>rtdelta<span class="ot">&lt;-</span>df.rt<span class="sc">$</span>deltaRT[<span class="fu">match</span>(df2<span class="sc">$</span>matchID, df.rt<span class="sc">$</span>matchId)]</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>rtFlag<span class="ot">&lt;-</span><span class="fu">if_else</span>(df2<span class="sc">$</span>rtdelta<span class="sc">&gt;</span><span class="fl">0.25</span>, <span class="st">&quot;FDC&quot;</span>, <span class="cn">NA</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>df2<span class="sc">$</span>rtFlag<span class="ot">&lt;-</span><span class="fu">if_else</span>(df2<span class="sc">$</span>limFlag<span class="sc">==</span><span class="st">&quot;LTL&quot;</span>, <span class="cn">NA</span>, df2<span class="sc">$</span>rtFlag)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="blank-contamination" class="level3">
@@ -3729,12 +3742,12 @@ vertical-align: -.125em;
 <p><u><strong>Method Blanks:</strong></u></p>
 <p>MBs are associated by the sample preparation date so make sure that is correct in the df.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">methodBlanks</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">methodBlanks</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><u><strong>Instrumental Blanks:</strong></u></p>
 <p>IBs are assocated by the injection time so make sure the analysisDateTime is correct in the df.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">IBflags</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">IBflags</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -3772,28 +3785,28 @@ vertical-align: -.125em;
 <li><p>maximum number of CCV samples per batch must be &lt;=8</p></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">link2ccv</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">link2ccv</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="oprs" class="level3">
 <h3 class="anchored" data-anchor-id="oprs">OPRs</h3>
 <p>OPRs must be ran with every analytical batch (10 samples) and be numbered as such (i.e., OPR1, LLOPR2). The 1 corresponds to the first batch and the 2 to the second. The function <em>oprFlag</em> accounts for the rest.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">oprFlag</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">oprFlag</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="cals" class="level3">
 <h3 class="anchored" data-anchor-id="cals">CALs</h3>
 <p>The calibration checks (CAL) are associated with every sample in the run and are flagged if they fall outside the acceptable recovery. Associated samples are flagged as well. The <em>calFlag</em> function in the glendR package does this.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">calFlag</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">calFlag</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="iscs" class="level3">
 <h3 class="anchored" data-anchor-id="iscs">ISCs</h3>
 <p>ISCs (LVM) are associated with every sample in the run, similar to the CALs. The FVM and all associated samples are flagged with the <em>iscFlag</em> function in glendR</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">iscFlag</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>df2<span class="ot">&lt;-</span><span class="fu">iscFlag</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -3801,7 +3814,7 @@ vertical-align: -.125em;
 <h2 class="anchored" data-anchor-id="clean-up-final-df">Clean up final DF:</h2>
 <p>Finally, we can clean up the dataframe that we have been working with and get it into the GLENDA format.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>final.df<span class="ot">&lt;-</span><span class="fu">glendaFormat</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>final.df<span class="ot">&lt;-</span><span class="fu">glendaFormat</span>(df2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Save it as a csv.</p>
 </section>
