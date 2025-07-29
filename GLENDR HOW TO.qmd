@@ -98,6 +98,28 @@ sop<-c("Appendix J Rev 5 07/14/2023")
 sortOrder<-("A") 
 ```
 
+## Set the sample types
+
+Here, we want to set the names of the duplicate and matrix spike samples in a vector so that the functions later on will recognize the correct samples. Make sure that the names are exactly as they are in the SCIEX OS.
+
+-   if there are none of the sample type in the batch, type "NONE" in the vector, assuming no samples were named "NONE"
+
+-   LD1s/LD2s: duplicate samples (must have the "\_2" behind the LD2s samples)
+
+-   MSs: matrix spiked samples (must have "\_MS" behind the spiked samples
+
+-   FBs: field blank samples
+
+-   TBs: travel blank samples
+
+```{r}
+LD1s<-c("H012C_9", "H012C_19")
+LD2s<-c("H012C_9_2", "H012C_19_2") 
+MSs<-c("H012C_20_MS", "H012C_10_MS")
+FBs<-c("NONE")
+TBs<-c("NONE")
+```
+
 ### Importing required datasets
 
 IMPORTANT: after processing the data on SCIEX OS, export the entire results table as a .txt file. [Export all rows and all columns.]{.underline} Do not export as a .csv or convert the table to excel, this will change how the data is formatted and the functions associated with glendR will not work.
@@ -324,9 +346,7 @@ For the sampleType function:
 
 -   vectors of unique sample names are required to determine [matrix spikes]{.underline}, [duplicates]{.underline}, f[ield blanks]{.underline}, and [travel blanks]{.underline}
 
-    -   These are *manually* added
-
-    -   if there are none of these sample types in the batch, simply type "NONE" for the sample names (assuming that no actual sample is named 'NONE")
+    -   These are *manually* added in the beginning (section: Set the sample types)
 
 -   Correct naming of samples in the SCIEX OS (during batch set-up) must be used, renaming can be done seperatly if any typos exist. The naming rules are as follows, and case is ignores (i.e., any pattern of upper or lower case will match):
 
@@ -345,12 +365,6 @@ For the sampleType function:
 -   it saves the "Sample.Type" column as this will be used in the final dataset and for other functions later on
 
 ```{r}
-LD1s<-c("H012C_9", "H012C_19")
-LD2s<-c("H012C_9_2", "H012C_19_2") #the "_2" naming system is used to signify the duplicate sample
-MSs<-c("H012C_20_MS", "H012C_10_MS")
-FBs<-c("NONE")
-TBs<-c("NONE")
-
 df1<-sampleTypes(df1, MS.Samples = MSs, LD1.Samples = LD1s,LD2.Samples = LD2s, Field.Blanks = FBs, Travel.Blanks = TBs)
 ```
 
