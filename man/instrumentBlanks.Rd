@@ -1,7 +1,7 @@
-\name{IBflags}
+\name{instrumentBlanks}
 \alias{instrumentBlanks}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{IBflags: a function to flag IBs and associated samples
+\title{instrumentBlanks: a function to flag IBs and associated samples
 %%  ~~function to do ... ~~
 }
 \description{
