@@ -650,7 +650,7 @@ IBs are assocated by the injection time so make sure the analysisDateTime is cor
 
 ```{r}
 df2<-IBflags(df2) 
-
+glen
 
 ```
 
