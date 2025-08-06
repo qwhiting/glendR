@@ -72,11 +72,11 @@ Note: some files will still require the "sheet=#" to specify which excel sheet t
 -   mdlPath- MDLs for PFAS analytes .xlsx file
 
 ```{r}
-sciexPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/240408_H012C.txt")
-infoPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/Reanalysis/H012_test_info.xlsx")
-eisnisPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/NIS for EIS.xlsx")
-spikePath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/PFAS Spikes.xlsx")
-mdlPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Huron/MDL ngMl 240316.xlsx")
+sciexPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Ontario/SCIEX RESULTS/241219_OntarioSS_B1.txt")
+infoPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Ontario/Batch Info/ON_B1GlendR_info.xlsx")
+eisnisPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Ontario/Other Info/NIS for EIS.xlsx")
+spikePath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Ontario/Other Info/PFAS Spikes.xlsx")
+mdlPath<-c("/Users/quinnwhiting/Documents/NRRI/GLSSP/R4GLNDA/Ontario/Other Info/MDL ngMl 240316.xlsx")
 ```
 
 ## Set batch information:
@@ -92,8 +92,8 @@ Here we need to set the information such as:
 -   **sordOrder**- a unique letter for each analytical batch for each lake, used to sort based on batch when the entire lake is combined into one dataset
 
 ```{r}
-sampleYr<-c("2022") 
-LkAbrr<-c("H")
+sampleYr<-c("2023") 
+LkAbrr<-c("N")
 sop<-c("Appendix J Rev 5 07/14/2023") 
 sortOrder<-("A") 
 ```
@@ -113,9 +113,9 @@ Here, we want to set the names of the duplicate and matrix spike samples in a ve
 -   TBs: travel blank samples
 
 ```{r}
-LD1s<-c("H012C_9", "H012C_19")
-LD2s<-c("H012C_9_2", "H012C_19_2") 
-MSs<-c("H012C_20_MS", "H012C_10_MS")
+LD1s<-c("N001", "N005")
+LD2s<-c("N001_2", "N005_2") 
+MSs<-c("N001_MS", "N020_MS")
 FBs<-c("NONE")
 TBs<-c("NONE")
 ```
@@ -183,7 +183,7 @@ info<-read_excel(path = infoPath)
         | PFBS_M2    | PFOS_M8 | 1        | 1        |
 
 ```{r}
-eis.nis<-read_excel(path = eisnisPath,sheet=3)
+eis.nis<-read_excel(path = eisnisPath,sheet=2)
 #remove any spaces in the names
 eis.nis$EIS<-gsub(" ", "", eis.nis$EIS)
 eis.nis$NIS<-gsub(" ", "", eis.nis$NIS)
@@ -196,7 +196,7 @@ eis.nis$NIS<-gsub(" ", "", eis.nis$NIS)
     -   MDLs are in ng/mL, conversion to ng/g can be done with sample weights
 
 ```{r}
-mdl<-read_excel(mdlPath, sheet = 2)
+mdl<-read_excel(mdlPath, sheet = 1)
 mdl$Analyte<-gsub(" ","", mdl$Analyte)
 ```
 
@@ -209,7 +209,7 @@ mdl$Analyte<-gsub(" ","", mdl$Analyte)
     -   This file also contains all the CAS# for each PFAS which have to be recorded in the final data file
 
 ```{r}
-spike<-read_excel(spikePath, sheet=3)
+spike<-read_excel(spikePath, sheet=2)
 spike$Component<-gsub(" ","", spike$Component)
 ```
 
@@ -228,7 +228,7 @@ The calibration curve should be checked such that the R2 is \>0.99 and everythin
 IMPORTANT: use 'ggsave' to save the plot to a file location.
 
 ```{r}
-p1<-calPlot(df=sciex, Title = "##TEXT##", Subtitle = "###text###")
+p1<-calPlot(df=sciex, Title = "Ontario Surface", Subtitle = "Batch 1")
 ```
 
 #### Detection Limits:
@@ -449,7 +449,7 @@ match the MDL with the mdl file, the LOQ is calculated by the 'loq' function in 
 
 ```{r}
 #gets the mdl in the matching units (ng/mL or ng/g)
-df1$mdl<-round(mdl$`MDL (ng/mL)`[match(df1$Component.Name, mdl$Analyte)]/df1$weightVolumeAnalyzed, digits = 3)
+df1$mdl<-round(mdl$MDL[match(df1$Component.Name, mdl$Analyte)]/df1$weightVolumeAnalyzed, digits = 3)
 #account for the dilution if any
 df1$mdl<-df1$mdl*df1$dilutionFactor
 df1<-loq(df1)
@@ -649,7 +649,9 @@ df2<-methodBlanks(df2)
 IBs are assocated by the injection time so make sure the analysisDateTime is correct in the df.
 
 ```{r}
-df2<-IBflags(df2)
+df2<-IBflags(df2) 
+
+df2<-instrumentBlanks(df2)
 ```
 
 ## Additional QAQCs
