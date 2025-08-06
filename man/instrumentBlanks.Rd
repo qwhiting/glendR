@@ -8,7 +8,7 @@
 This function first flags the IBs if they are >0.5* MDL, it then associates each IB to the corresponding samples and flags them if they are not 5x greater than the IB. It also adds the IB comment.
 }
 \usage{
-IBflags(df)
+instrumentBlanks(df)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

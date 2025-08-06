@@ -3,7 +3,7 @@
 #' @import dplyr
 #' @export
 
-IBflags<-function(df){
+instrumentBlanks<-function(df){
 
   IB2<-function(df){
     #flag the TRG compounds outside the 70-130% recovery range in the ibs in the main df
@@ -511,7 +511,7 @@ IBflags<-function(df){
   } else if (numberOfIb=="6"){
     df<-IB6(df)
   } else if (numberOfIb=="7"){
-    df<-IB7(Df)
+    df<-IB7(df)
   } else if (numberOfIb=="8"){
     df<-IB8(df)
   } else if (numberOfIb=="9"){
