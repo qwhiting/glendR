@@ -13,5 +13,6 @@ Once you have the R package downloaded and are able to import it into R, check t
 - MDL data (.csv)
 - EIS and NIS data (.csv)
 - Spiking data (.csv)
-  Further details on data format are in [GLENDR HOW TO](
+  Further details on data format are in [GLENDR HOW TO](https://github.com/qwhiting/glendR/blob/main/GLENDR%20HOW%20TO.html)
+  
 Please cite as: Quinn Whiting, glendR (2025), Gethub repository, https://www.github.com/qwhiting/glendR
