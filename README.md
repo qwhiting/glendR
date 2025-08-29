@@ -1,5 +1,5 @@
 # Welcome to glendR
-![glendR logo](https://github.com/qwhiting/glendR/blob/main/images/glendR.png)
+<img src="https://github.com/qwhiting/glendR/blob/main/images/glendR.png" alt="glendR logo" style="width:30%; height:auto;">
 
 glendR is an R package of useful functions to format PFAS analysis from SCIEX OS to GLENDA format. Used by the Ulrich Lab at the Natural Resources Research Institute (University of Minnesota). 
 General instructions can be found in the 'GLENDR HOW TO' html file.
