@@ -5,11 +5,17 @@ glendR is an R package of useful functions to format PFAS analysis from SCIEX OS
 General instructions can be found in the 'GLENDR HOW TO' html file.
 ## Stating from scratch
 To download and use this R package, please follow the instructions:
-- download the entire code as a zip file and load the R package as any local R package that you have
-Alternativly:
-- use the git_install function (or similar) in R to download the most current version of the package
+-open Rstudio
+- install the package 'remotes'
+- ```r
+  install.packages('remotes')
+  ```
+- use the install_github function to download the most current version of the package
+- ```r
+  install_github("qwhiting/glendR")
+  ```
 
-Once you have the R package downloaded and are able to import it into R, check that ALL data is in the correct format. This includes the following:
+Once you have the R package downloaded and installed, check that ALL data is in the correct format. This includes the following:
 - SCIEX output data (.txt)
 - sample info data (.csv)
 - MDL data (.csv)
