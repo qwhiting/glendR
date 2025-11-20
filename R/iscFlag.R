@@ -10,6 +10,8 @@ iscFlag<-function(df){
   #df.isc$iscFlag<-if_else(df.isc$recovery<70 | df.isc$recovery>130, "LVM", NA)
   df.isc$iscFlag<-if_else(df.isc$recovery<70, "LVM", NA)
   df.isc$iscFlag<-if_else(df.isc$recovery>130, "LVM", df.isc$iscFlag)
+  #remove NAs (make characters so that str-detect wont remove them later on)
+  df.isc$limFlag<-if_else(is.na(df.isc$limFlag), "NA", df.isc$limFlag)
 
   #remove flag if isc is below ICAL LLOD
   df.isc$iscFlag<-if_else(str_detect(df.isc$limFlag, "LTL"), NA, df.isc$iscFlag)
