@@ -8,8 +8,8 @@
 iscFlag<-function(df){
   df.isc<-df%>%filter(resultQcIdentifier=="LVM")%>%filter(analyteType=="TRG")
   #df.isc$iscFlag<-if_else(df.isc$recovery<70 | df.isc$recovery>130, "LVM", NA)
-  df.isc$iscFlag<-if_else(df.isc$recovery<70, "LVM", NA)
-  df.isc$iscFlag<-if_else(df.isc$recovery>130, "LVM", df.isc$iscFlag)
+  df.isc$iscFlag<-if_else(df.isc$recovery<70, "FVM", NA)
+  df.isc$iscFlag<-if_else(df.isc$recovery>130, "FVM", df.isc$iscFlag)
   #remove NAs (make characters so that str-detect wont remove them later on)
   df.isc$limFlag<-if_else(is.na(df.isc$limFlag), "NA", df.isc$limFlag)
 
